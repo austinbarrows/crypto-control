@@ -6,14 +6,34 @@
 <div cdkDropList (cdkDropListDropped)="onDrop($event)">
   <mat-card cdkDragLockAxis="y" class="mat-elevation-z1 mat-card-test" *ngFor="let item of items | slice:start" cdkDrag>{{ item }}</mat-card>
 </div>
-<mat-card class="mat-elevation-z8 ">
+<mat-card class="mat-elevation-z8 " #test >
   <mat-card-title>Test Title yyy</mat-card-title>
   <mat-card-subtitle>subteetle test</mat-card-subtitle>
   <mat-card-content>
-    asdasdasdasdasdasdasdasdsa
-    asdasdasdasdasdasdasdsada
-    asdasdasdasdasdasdasdsadaasdsdddd d  d data
-    ssssd
+    {{ f(counter) }}
   </mat-card-content>
   <mat-card-actions>a</mat-card-actions>
 </mat-card>
+
+
+<table mat-table [dataSource]="items">
+  <ng-container matColumnDef="userName">
+      <th mat-header-cell *matHeaderCellDef>Name (Z)</th>
+      <td mat-cell *matCellDef="let item; let i = index">
+        <mat-form-field>
+          <input matInput [(ngModel)]="items[i]" placeholder="Element {{ i }}">
+        </mat-form-field>
+      </td>
+  </ng-container>
+  <ng-container matColumnDef="items2">
+      <th mat-header-cell *matHeaderCellDef>Items -- 2</th>
+      <td mat-cell *matCellDef="let item; let i = index">
+        <mat-form-field>
+          <input matInput [(ngModel)]="items[i]" placeholder="Element {{ i }}">
+        </mat-form-field>
+      </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+  <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
+</table>

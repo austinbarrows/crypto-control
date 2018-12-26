@@ -12,6 +12,14 @@ mat-divider {
   margin-left: 5%;
 }
 
+mat-card {
+  margin-bottom: 20px;
+}
+
+mat-form-field {
+  margin-top: 10px;
+}
+
 .cdk-drag-placeholder {
   opacity: 0;
 }
