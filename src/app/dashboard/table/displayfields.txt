@@ -1,0 +1,13 @@
+DB Name
+IP Address
+Type
+Primary Pool
+Mining Address
+Password
+Hashrate GH/S (RT)
+Target (RT)
+Freq
+Chip %
+Chip Temp
+Uptime
+Restart // Supposed to be a button to restart the miner

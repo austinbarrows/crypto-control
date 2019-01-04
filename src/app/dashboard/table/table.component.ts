@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop'
-import { Observable } from 'rxjs';
+import { Observable, interval, timer } from 'rxjs';
+import { MinerDataService } from '../miner-data-service/miner-data.service'
 
 @Component({
   selector: 'dashboard-table',
@@ -8,9 +9,13 @@ import { Observable } from 'rxjs';
   styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit {
-
-  time = new Observable();
+  time = new Date();
   items = ['Zero', 'One', 'Two', 'Three'];
+  dateRefresher = timer(0, 1000);
+  columnsToDisplay = ["databaseName", "ipAddress", "type", "primaryPool",
+                      "miningAddress", "password", "hashrateRT", "targetRT",
+                      "frequency", "chipPercent", "chipTemp", "uptime",
+                      "restart"];
 
   start = 1;
   onDrop(event) {
@@ -26,9 +31,26 @@ export class TableComponent implements OnInit {
     }
   }
 
-  constructor(){ }
+  updateTime() {
+    this.time = new Date();
+  }
+
+  tableData;
+
+  constructor(private minerDataService: MinerDataService){
+  }
 
   ngOnInit() {
+    this.dateRefresher.subscribe({
+      next: data => this.updateTime()
+    })
+
+    this.minerDataService.getMinerData().subscribe({
+      next: data => {
+        this.tableData = data;
+        console.log(data);
+      }
+    });
   }
 
 }

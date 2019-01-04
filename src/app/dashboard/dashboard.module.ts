@@ -9,10 +9,13 @@ import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatButtonModule } from '@angular/material/button';
+
+import { PipeModule } from '../pipe/pipe.module';
 
 import { DashboardComponent } from './dashboard.component';
 import { TableComponent } from './table/table.component';
-import { TableMinerComponent } from './table/table-miner/table-miner.component';
+import { TableMinerComponent } from './table-miner/table-miner.component';
 
 
 @NgModule({
@@ -25,7 +28,9 @@ import { TableMinerComponent } from './table/table-miner/table-miner.component';
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    PipeModule,
+    MatButtonModule
   ],
   declarations: [
     DashboardComponent,
