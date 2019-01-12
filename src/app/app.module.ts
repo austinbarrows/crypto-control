@@ -1,7 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { DashboardModule } from './dashboard/dashboard.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { DashboardModule } from './dashboard/dashboard.module';
+import { NavbarModule } from './navbar/navbar.module';
 
 import { AppComponent } from './app.component';
 
@@ -11,8 +13,9 @@ import { AppComponent } from './app.component';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     DashboardModule,
-    BrowserAnimationsModule
+    NavbarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

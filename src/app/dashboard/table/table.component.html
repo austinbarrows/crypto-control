@@ -1,11 +1,4 @@
-<mat-toolbar class="fixed-header mat-elevation-z4" color="primary">
-  <mat-toolbar-row>
-    <i class="material-icons">add</i>
-    <i class="material-icons">add_circle</i>
-    </mat-toolbar-row>
-</mat-toolbar>
-
-<mat-card class="mat-elevation-z4 mat-card-test" *ngFor="let item of items; let i = index">{{i}}. {{ item }}</mat-card>
+<!-- <mat-card class="mat-elevation-z4 mat-card-test" *ngFor="let item of items; let i = index">{{i}}. {{ item }}</mat-card>
 <mat-divider [inset]="false"></mat-divider>
 <div cdkDropList (cdkDropListDropped)="onDrop($event)">
   <mat-card cdkDragLockAxis="y" class="mat-elevation-z1 mat-card-test" *ngFor="let item of items | slice:start" cdkDrag>{{ item }}</mat-card>
@@ -17,9 +10,7 @@
     {{ time }}
   </mat-card-content>
   <mat-card-actions>a</mat-card-actions>
-</mat-card>
-
-
+</mat-card> -->
 
 
 <table mat-table cdkDropList class="mat-elevation-z2" [dataSource]="tableData">

@@ -16,17 +16,13 @@ mat-card {
   margin-bottom: 20px;
 }
 
-.fixed-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 999;
-  width: 100%;
-}
-
 mat-form-field {
   margin-top: 10px;
 }
+
+/* .mat-table {
+  margin-top: 5%;
+} */
 
 .mat-row {
 
