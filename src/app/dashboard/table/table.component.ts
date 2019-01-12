@@ -35,14 +35,39 @@ export class TableComponent implements OnInit {
     this.time = new Date();
   }
 
-  tableData;
+  // restartDisabled = false;
+  //
+  // invertRestart() {
+  //   this.restartDisabled = !this.restartDisabled;
+  // }
 
+  tableData;
+  /* Note A:
+     The code up to the closing A marker abuses the JavaScript type conversion
+     heavily. Due to the falsy nature of an empty array, uninitialized elements
+     cause all buttons to be enabled by default. When a specific falsy
+     element is inverted, it becomes true due to the imperative opposite of
+     a falsy element being a truthy one, thus achieving the goal of disabling
+     the button linked to such element.
+  */
+  disabledArr = [];
+
+  disable(i) {
+
+    this.disabledArr[i] = !this.disabledArr[i];
+    // console.log(this.disabledArr);
+
+  }
+  /* End A */
   constructor(private minerDataService: MinerDataService){
   }
 
   ngOnInit() {
     this.dateRefresher.subscribe({
-      next: data => this.updateTime()
+      next: data => {
+        this.updateTime();
+        // this.invertRestart();
+      }
     })
 
     this.minerDataService.getMinerData().subscribe({
@@ -51,6 +76,7 @@ export class TableComponent implements OnInit {
         console.log(data);
       }
     });
+    console.log(this.disabledArr);
   }
 
 }
