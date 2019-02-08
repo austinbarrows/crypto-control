@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TableMinerComponent } from './table-miner.component';
+import { NavbarCloneComponent } from './navbar-clone.component';
 
-describe('TableMinerComponent', () => {
-  let component: TableMinerComponent;
-  let fixture: ComponentFixture<TableMinerComponent>;
+describe('NavbarCloneComponent', () => {
+  let component: NavbarCloneComponent;
+  let fixture: ComponentFixture<NavbarCloneComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TableMinerComponent ]
+      declarations: [ NavbarCloneComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TableMinerComponent);
+    fixture = TestBed.createComponent(NavbarCloneComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -12,12 +12,40 @@ mat-divider {
   margin-left: 5%;
 }
 
+mat-card {
+  margin-bottom: 20px;
+}
+
+mat-form-field {
+  margin-top: 10px;
+}
+
+/* .mat-table {
+  margin-top: 5%;
+} */
+
+.mat-row {
+
+}
+
+.mat-cell  {
+  text-align: left;
+  padding-left: 0px;
+  padding-right: 30px;
+}
+
+.mat-header-cell {
+  text-align: left;
+  word-wrap: normal;
+  padding-right:30px;
+}
+
 .cdk-drag-placeholder {
   opacity: 0;
 }
 
 .cdk-drag-preview {
-  box-shadow:0 5px 5px -3px rgba(0,0,0,.2),
+  box-shadow:0 5px 5px -3px rgba(0,0,0,.20),
              0 8px 10px 1px rgba(0,0,0,.14),
              0 3px 14px 2px rgba(0,0,0,.12)
 }
