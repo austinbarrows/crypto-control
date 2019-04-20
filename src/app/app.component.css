@@ -1,3 +1,14 @@
-.red {
-  margin-top: 8px;
+.dashboard {
+  float: left;
+  margin-left: 220px;
+  min-width: calc(100vw - (220px + 17px )); /* scrollbar is 17 px wide*/
+  max-width: calc(100vw - (220px + 17px)); /* scrollbar is 17 px wide*/
+}
+
+app-sidebar {
+  float: left;
+}
+
+app-sidebar-clone {
+  float: left;
 }
