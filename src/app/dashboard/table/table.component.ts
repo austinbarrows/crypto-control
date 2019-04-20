@@ -1,21 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop'
-import { Observable, interval, timer } from 'rxjs';
-import { MinerDataService } from '../miner-data-service/miner-data.service'
+import { Observable, interval, timer, BehaviorSubject } from 'rxjs';
+import { DashboardDataService } from '../dashboard-data-service/dashboard-data.service';
+
 
 @Component({
   selector: 'dashboard-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css']
 })
+
 export class TableComponent implements OnInit {
-  time = new Date();
   items = ['Zero', 'One', 'Two', 'Three'];
-  dateRefresher = timer(0, 1000);
-  columnsToDisplay = ["databaseName", "ipAddress", "type", "primaryPool",
+
+  columnsToDisplay = ["checkbox", "databaseName", "ipAddress", "type", "primaryPool",
                       "miningAddress", "password", "hashrateRT", "targetRT",
                       "frequency", "chipPercent", "chipTemp", "uptime",
                       "restart"];
+
+  maintModeEnabled;
 
   start = 1;
   onDrop(event) {
@@ -31,9 +34,7 @@ export class TableComponent implements OnInit {
     }
   }
 
-  updateTime() {
-    this.time = new Date();
-  }
+
 
   // restartDisabled = false;
   //
@@ -42,6 +43,8 @@ export class TableComponent implements OnInit {
   // }
 
   tableData;
+  miners;
+  //passwords;
   /* Note A:
      The code up to the closing A marker abuses the JavaScript type conversion
      heavily. Due to the falsy nature of an empty array, uninitialized elements
@@ -59,23 +62,80 @@ export class TableComponent implements OnInit {
 
   }
   /* End A */
-  constructor(private minerDataService: MinerDataService){
+
+  disabledMiners;
+  changedRows = [];
+  updateChangedRows(miner) {
+    console.log(miner);
+    if (!this.changedRows.includes(miner.name)) {
+      this.changedRows.push(miner.name);
+      this.dashboardDataService.setChangedRows(this.changedRows);
+    }
+  }
+
+  setMiners(data) {
+    let miners = data.miners;
+    this.miners = [];
+    console.log(miners.length)
+    for (let i = 0; i < miners.length; i++) {
+      let miner = miners[i];
+      this.miners[i] = {};
+      if (miner.commands.stats) {
+        this.miners[i] = {
+          type: miner.commands.stats.STATS[0].Type,
+          primaryPool: miner.commands.pools.POOLS[0].URL,
+          miningAddress: miner.commands.pools.POOLS[0].User,
+          password: data.passwords[miner.name],
+          hashrateRT: miner.commands.stats.STATS[1]["GHS 5s"],
+          targetRT: "N/A",
+          frequency: miner.commands.stats.STATS[1].frequency,
+          chipPercent: miner.commands.stats.STATS[1]["Chip%"],
+          chipTemp: "N/A",
+          uptime: miner.commands.stats.STATS[1].Elapsed,
+          selected: true,
+        };
+      }
+      this.miners[i].name = miner.name;
+      this.miners[i].ip = miner.ip;
+    }
+  }
+
+  drop(event) {
+    moveItemInArray(this.miners, event.previousIndex, event.currentIndex);
+  }
+
+  constructor(private dashboardDataService: DashboardDataService, private elRef: ElementRef){
+
   }
 
   ngOnInit() {
-    this.dateRefresher.subscribe({
+    this.dashboardDataService.getMinerData().subscribe({
       next: data => {
-        this.updateTime();
-        // this.invertRestart();
+        if (!this.maintModeEnabled) {
+          this.miners = data;
+          this.dashboardDataService.setChangedRows([]);
+        }
+        //this.setMiners(data);
+        //console.log(data);
       }
-    })
+    });
 
-    this.minerDataService.getMinerData().subscribe({
+    this.dashboardDataService.getChangedRows().subscribe({
       next: data => {
-        this.tableData = data;
+        this.changedRows = data;
+        //this.setMiners(data);
         console.log(data);
       }
     });
+
+    this.dashboardDataService.getMaintMode().subscribe({
+      next: data => {
+        this.maintModeEnabled = data;
+        console.log(data);
+      }
+    });
+
+    // x
     console.log(this.disabledArr);
   }
 

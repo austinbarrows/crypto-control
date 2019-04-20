@@ -1,43 +1,64 @@
-.mat-card-test {
-  margin-top: 5px;
-  margin-bottom: 5px;
-  min-height:20px;
-  max-height:20px;
+.header {
+  font-weight: 500;
+  padding: 10px;
 }
 
-mat-divider {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-right: 5%;
-  margin-left: 5%;
+td {
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: center;
 }
 
-mat-card {
-  margin-bottom: 20px;
+table {
+  /* float: right; */
+  background-color: white;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  margin-left: 16px;
+  margin-right: 16px;
+  border-collapse: collapse;
+}
+
+.drag-handle {
+  color: rgba(0, 0, 0, 0.6);
+  cursor: move;
+  width: 36px;
+  /* margin-right: 8px; */
+}
+
+.row:hover {
+    background-color: rgba(0, 0, 0, .08);
+    transition: background-color 300ms ease;
+}
+
+form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
 }
 
 mat-form-field {
-  margin-top: 10px;
+  width: 150px;
 }
 
-/* .mat-table {
-  margin-top: 5%;
-} */
-
-.mat-row {
-
+tr {
+  border-bottom: rgba(0, 0, 0, 0.15) solid 1px;
 }
 
-.mat-cell  {
-  text-align: left;
-  padding-left: 0px;
-  padding-right: 30px;
+.name-cell {
+  border-right: rgba(0, 0, 0, 0.15) solid 1px;
 }
 
-.mat-header-cell {
-  text-align: left;
-  word-wrap: normal;
-  padding-right:30px;
+.pool-input {
+  width: 150px;
+}
+
+.address-input {
+  width: 100px;
+}
+
+.password-input {
+  width: 75px;
 }
 
 .cdk-drag-placeholder {
@@ -45,9 +66,13 @@ mat-form-field {
 }
 
 .cdk-drag-preview {
+  background-color: white;
+  font: 400 14px/20px Roboto,"Helvetica Neue",sans-serif;
+  border-radius: 4px;
+  box-sizing: border-box;
   box-shadow:0 5px 5px -3px rgba(0,0,0,.20),
              0 8px 10px 1px rgba(0,0,0,.14),
-             0 3px 14px 2px rgba(0,0,0,.12)
+             0 3px 14px 2px rgba(0,0,0,.12);
 }
 
 .cdk-drop-list-dragging .cdk-drag {
