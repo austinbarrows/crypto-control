@@ -1,0 +1,10 @@
+.clone-header {
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+mat-toolbar {
+  min-height: 55px;
+  height: 55px;
+}
