@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { DragDropModule } from '@angular/cdk/drag-drop'
 import { Observable } from 'rxjs';
 import { FormsModule } from'@angular/forms';
@@ -10,11 +11,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatIconModule } from '@angular/material/icon';
 
 import { PipeModule } from '../pipe/pipe.module';
 
 import { DashboardComponent } from './dashboard.component';
 import { TableComponent } from './table/table.component';
+import { StatsAndActionsComponent } from './stats-and-actions/stats-and-actions.component';
 
 @NgModule({
   imports: [
@@ -28,11 +33,15 @@ import { TableComponent } from './table/table.component';
     MatInputModule,
     PipeModule,
     MatButtonModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatCheckboxModule,
+    FlexLayoutModule,
+    MatIconModule
   ],
   declarations: [
     DashboardComponent,
-    TableComponent
+    TableComponent,
+    StatsAndActionsComponent
   ],
   exports: [
     DashboardComponent,
