@@ -1,0 +1,23 @@
+.fixed-sidebar {
+  position: fixed;
+  z-index: 999;
+  background-color: white;
+  min-height: calc(100vh - 55px);
+  width: 220px;
+}
+
+.sidebar-item {
+  min-height: 40px;
+}
+
+a {
+  min-width: 100%;
+  min-height: 45px;
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, .8);
+}
+
+i {
+  color: rgba(0, 0, 0, 0.4)
+}
