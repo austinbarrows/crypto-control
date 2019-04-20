@@ -44,8 +44,12 @@ export class UptimePipe implements PipeTransform {
     } else {
       timeString = times[0] + "s";
     }
-
-    return timeString;
+    if (seconds !== 0) {
+      return timeString;
+    }
+    else {
+      return "0s";
+    }
   }
 
 }
