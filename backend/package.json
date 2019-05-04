@@ -1,0 +1,22 @@
+{
+  "name": "miner-monitor",
+  "version": "1.0.0",
+  "description": "Monitors antminers",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Austin Barrows",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "flat": "^4.1.0",
+    "mongoose": "^5.1.5",
+    "node-ssh": "^5.1.2",
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5",
+    "scp": "0.0.3"
+  }
+}

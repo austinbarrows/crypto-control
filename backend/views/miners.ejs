@@ -1,0 +1,150 @@
+<% include partials/header %>
+<%
+function timeFormat(time) {
+  let hours = Math.floor(time / 3600);
+  let minutes = Math.floor((time % 3600) / 60);
+  let seconds = Math.floor(time % 60);
+  let displayString = hours + "h " + minutes + "m " + seconds + "s";
+  return displayString;
+};
+
+function percentify(number) {
+  number *= 100;
+  return number;
+};
+
+function calculateTemps(miner) {
+  let temps = [];
+  let stats = miner.commands.stats.STATS[1];
+  let typeID = stats["ID"];
+  if (typeID === "BC50") {
+    temps.push(stats["temp2_6"]);
+    temps.push(stats["temp2_7"]);
+    temps.push(stats["temp2_8"]);
+  } else if (typeID === "L30") {
+    temps.push(stats["temp2_1"]);
+    temps.push(stats["temp2_2"]);
+    temps.push(stats["temp2_3"]);
+    temps.push(stats["temp2_4"]);
+  } else if (typeID === "D10") {
+    temps.push(stats["temp2_1"]);
+    temps.push(stats["temp2_2"]);
+    temps.push(stats["temp2_3"]);
+  }
+  return temps;
+};
+
+function sortPoolsByPriority(miner) {
+  // Function not currently used
+  let pools = miner.commands.pools.POOLS;
+  let poolsSortedByPriority = [];
+  for (let i = 0; i < pools.length; i++) {
+    for (let j = 0; j < pools.length; j++) {
+      if (pools[i].Priority === j) {
+        poolsSortedByPriority[j] = pools[i];
+      }
+    }
+  }
+
+  return poolsSortedByPriority;
+};
+
+function getActivePool(miner) {
+  // Function not currently used
+  let sortedPools = sortPoolsByPriority(miner);
+  //console.log(sortedPools);
+  for (let i = 0; i < sortedPools.length; i++) {
+    if (sortedPools[i].Status === "Alive") {
+      return sortedPools[i];
+    }
+  }
+}
+%>
+<h1>Miners</h1>
+<a href="/">Home</a>
+<p><a href="miners/new">Add miner</a></p>
+<p><a href="miners/remove">Remove miner</a></p>
+
+<table border="1" id="minerTable">
+  <tr>
+    <th>DB Name</th>
+    <th>IP Address</th>
+    <th>Type</th>
+    <th>Primary Pool</th>
+    <th>Mining Address</th>
+    <th>Pass</th>
+    <th>Hashrate GH/S (RT)</th>
+    <th>Target (RT)</th>
+    <th>Freq</th>
+    <th>Chip %</th>
+    <th>Chip Temp</th>
+    <th>Uptime</th>
+    <th>Restart</th>
+  </tr>
+
+  <% miners.forEach(function(miner){ %>
+    <tr>
+      <td><%= miner.name %></td>
+      <td><%= miner.ip %></td>
+      <% //if ("commands" in miner) { if ("stats" in miner.commands) { %>
+      <% if (!(miner.timedOutOnLastQuery)) { %>
+        <% let metadata = miner.commands.stats.STATS[0];
+           let stats = miner.commands.stats.STATS[1];
+           let type = metadata.Type;
+           let ghs5s = stats["GHS 5s"];
+           let frequency = stats.frequency;
+           let chipPercent = percentify(stats["Chip%"]);
+           let timeElapsed = timeFormat(stats.Elapsed);
+
+           let pool = miner.commands.pools.POOLS[0];
+           let poolURL = pool.URL;
+           let poolUser = pool.User;
+           let poolPass = passwords[miner.name];
+           let urlInputSize = poolURL.length;
+           let userInputSize = poolUser.length;
+           let passInputSize = poolPass.length;
+           let temps = calculateTemps(miner);
+            %>
+        <td><%= type %></td>
+        <form class="poolSettings">
+          <td><input type="text" name="poolURL_<%= miner.name %>"  value="<%= poolURL %>" size="<%= urlInputSize %>"></td>
+          <td><input type="text" name="poolUser_<%= miner.name %>" value="<%= poolUser %>" size="<%= userInputSize %>"></td>
+          <td><input type="text" name="poolPass_<%= miner.name %>" value="<%= poolPass %>" size="<%= passInputSize %>"><input type="submit" class="submitPoolSettings" value="Save" name="submitPoolSettings_<%= miner.name %>"></td>
+        </form>
+        <td><%= ghs5s %></td>
+        <td>
+          <form class="targetRT">
+            <input type="text" name="targetRT_<%= miner.name %>" placeholder="target hashrate">
+            <input type="submit" value="Save">
+          </form>
+        </td>
+        <td><%= frequency %></td>
+        <td><%= chipPercent %> % </td>
+        <td><% temps.forEach(function(temp) { %>
+          <%= temp %>
+        <% }); %></td>
+        <td><%= timeElapsed %></td>
+        <td><button type="button" name="restart_<%= miner.name %>" class="restart">Restart</button></td>
+      <% } %>
+    </tr>
+  <% }) %>
+</table>
+
+<div class="sk-fading-circle">
+  <div class="sk-circle1 sk-circle"></div>
+  <div class="sk-circle2 sk-circle"></div>
+  <div class="sk-circle3 sk-circle"></div>
+  <div class="sk-circle4 sk-circle"></div>
+  <div class="sk-circle5 sk-circle"></div>
+  <div class="sk-circle6 sk-circle"></div>
+  <div class="sk-circle7 sk-circle"></div>
+  <div class="sk-circle8 sk-circle"></div>
+  <div class="sk-circle9 sk-circle"></div>
+  <div class="sk-circle10 sk-circle"></div>
+  <div class="sk-circle11 sk-circle"></div>
+  <div class="sk-circle12 sk-circle"></div>
+  <div class="spinnerMessage restartMessage">Miner restarting, page will refresh when done</div>
+  <div class="spinnerMessage switchpoolMessage">Pool switching, page will refresh when done</div>
+</div>
+
+<% include partials/footer %>

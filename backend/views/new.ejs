@@ -1,0 +1,16 @@
+<% include partials/header %>
+<h1>Add new miner by IP</h1>
+
+<form action="/miners" method="POST">
+  IP:   <input type="text" name="ip" placeholder="10.0.0.X" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" required title="Please enter a valid IPv4 address (e.g. 10.0.0.101)">
+  <div></div>
+  Name: <input type="text" name="name" placeholder="Name (e.g. My AntMiner)">
+  <button type="submit">Submit</button>
+</form>
+
+<p><a href="/miners">Go back</a></p>
+
+
+
+
+<% include partials/footer %>
