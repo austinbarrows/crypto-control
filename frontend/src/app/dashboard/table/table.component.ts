@@ -15,6 +15,7 @@ export class TableComponent implements OnInit {
   tableData;
   miners;
   disabledMiners;
+  changedRows = [];
   disabledArr = [];
 
   /* Note A: ***OUTDATED***
@@ -34,13 +35,17 @@ export class TableComponent implements OnInit {
   }
   /* End A */
 
-  changedRows = [];
-  updateChangedRows(miner) {
-    console.log(miner);
-    if (!this.changedRows.includes(miner.name)) {
-      this.changedRows.push(miner.name);
-      this.dashboardDataService.setChangedRows(this.changedRows);
+  updateChangedRows(miner, pool, user, pass) {
+    miner.primaryPool = pool;
+    miner.miningAddress = user;
+    miner.password = pass;
+
+    if (this.changedRows.includes(miner)) {
+      this.changedRows.splice(this.changedRows.indexOf(miner), 1);
     }
+
+    this.changedRows.push(miner);
+    this.dashboardDataService.setChangedRows(this.changedRows);
   }
 
   setMiners(data) {
