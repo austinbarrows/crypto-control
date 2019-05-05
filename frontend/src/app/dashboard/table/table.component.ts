@@ -130,6 +130,9 @@ export class TableComponent implements OnInit {
         if (!this.maintModeEnabled) {
           this.miners = data;
           this.dashboardDataService.setChangedRows([]);
+          if (data) {
+            this.setMiners(data);
+          }
         }
       }
     });
