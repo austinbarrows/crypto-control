@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, timer } from 'rxjs';
+import { Observable, BehaviorSubject, Subject, timer} from 'rxjs';
+import { switchMap, debounceTime, catchError, startWith } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Injectable({
@@ -9,6 +10,8 @@ export class DashboardDataService {
 
   constructor(private http: HttpClient) { }
   // Responsible for getting data about miners
+  timerDelay = new BehaviorSubject(30000);
+  dataTimer = this.timerDelay.pipe(switchMap((delay) => timer(0, delay)));
   maintModeEnabled = new BehaviorSubject(false);
   autoModeEnabled = new BehaviorSubject(true);
   }
