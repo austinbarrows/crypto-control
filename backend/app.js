@@ -22,9 +22,9 @@ let globals = {
 };
 
 //Express setup
-app.set("view engine", "ejs");
+//app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use("/public", express.static(__dirname + "/public"));
+app.use("/", express.static(__dirname + "/dist/crypto-control"));
 app.use(cors());
 
 //Mongoose/MongoDB setup
@@ -581,7 +581,7 @@ async function whattomineMiddleware(req, res, next) {
 };
 
 app.get("/", function(req, res) {
-  res.render("index");
+  res.sendFile(path.resolve("dist/crypto-control/index.html"));
 });
 
 app.get("/whattomine", whattomineMiddleware, function(req, res) {
