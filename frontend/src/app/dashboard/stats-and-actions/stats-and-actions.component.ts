@@ -68,7 +68,7 @@ export class StatsAndActionsComponent implements OnInit {
       next: data => {
         this.updateTime();
       }
-    })
+    });
 
     this.dashboardDataService.getChangedRows().subscribe({
       next: data => {
