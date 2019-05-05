@@ -21,9 +21,9 @@
     <td class="name-cell">{{ miner.name }}</td>
     <td>{{ miner.ip }}</td>
     <td>{{ miner.type}}</td>
-    <td><mat-form-field class="pool-input"><input matInput (change)="updateChangedRows(miner)" value="{{ miner.primaryPool }}" spellcheck="false"></mat-form-field></td>
-    <td><mat-form-field class="address-input"><input matInput (change)="updateChangedRows(miner)" value="{{ miner.miningAddress }}" spellcheck="false"></mat-form-field></td>
-    <td><mat-form-field class="password-input"><input matInput (change)="updateChangedRows(miner)" value="{{ miner.password }}" spellcheck="false"></mat-form-field></td>
+    <td><mat-form-field class="pool-input"><input matInput #pool (change)="updateChangedRows(miner, pool.value, address.value, password.value)" value="{{ miner.primaryPool }}" spellcheck="false"></mat-form-field></td>
+    <td><mat-form-field class="address-input"><input matInput #address (change)="updateChangedRows(miner, pool.value, address.value, password.value)" value="{{ miner.miningAddress }}" spellcheck="false"></mat-form-field></td>
+    <td><mat-form-field class="password-input"><input matInput #password (change)="updateChangedRows(miner, pool.value, address.value, password.value)" value="{{ miner.password }}" spellcheck="false"></mat-form-field></td>
     <td>{{ miner.hashrateRT }}</td>
     <td>{{ miner.targetRT }}</td>
     <td>{{ miner.frequency | frequency }}</td>
