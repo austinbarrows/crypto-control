@@ -3,7 +3,6 @@ import { moveItemInArray } from '@angular/cdk/drag-drop'
 import { Observable, interval, timer, BehaviorSubject } from 'rxjs';
 import { DashboardDataService } from '../dashboard-data-service/dashboard-data.service';
 
-
 @Component({
   selector: 'dashboard-table',
   templateUrl: './table.component.html',
@@ -11,41 +10,12 @@ import { DashboardDataService } from '../dashboard-data-service/dashboard-data.s
 })
 
 export class TableComponent implements OnInit {
-  items = ['Zero', 'One', 'Two', 'Three'];
-
-  columnsToDisplay = ["checkbox", "databaseName", "ipAddress", "type", "primaryPool",
-                      "miningAddress", "password", "hashrateRT", "targetRT",
-                      "frequency", "chipPercent", "chipTemp", "uptime",
-                      "restart"];
-
   maintModeEnabled;
-
   start = 1;
-  onDrop(event) {
-    moveItemInArray(this.items, event.previousIndex + this.start, event.currentIndex + this.start);
-  }
-
-  smartComma(index) {
-    let arr = this.items;
-    if (index !== arr.length - 1) {
-      return ", ";
-    } else {
-      return "";
-    }
-  }
-
-
-
-  // restartDisabled = false;
-  //
-  // invertRestart() {
-  //   this.restartDisabled = !this.restartDisabled;
-  // }
-
   tableData;
   miners;
-  //passwords;
-  /* Note A:
+
+  /* Note A: ***OUTDATED***
      The code up to the closing A marker abuses the JavaScript type conversion
      heavily. Due to the falsy nature of an empty array, uninitialized elements
      cause all buttons to be enabled by default. When a specific falsy
