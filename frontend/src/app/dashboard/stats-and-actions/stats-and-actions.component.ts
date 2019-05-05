@@ -1,3 +1,4 @@
+import { ViewChild, ElementRef } from '@angular/core';
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable, interval, timer, BehaviorSubject } from 'rxjs';
 import { DashboardDataService } from '../dashboard-data-service/dashboard-data.service';
@@ -20,6 +21,10 @@ export class StatsAndActionsComponent implements OnInit {
   maintModeEnabled;
   timerDelay;
   minDelay = 1000; // Should not be 0 or lower.
+  @ViewChild("addminerName") addminerName;
+  @ViewChild("addminerIP") addminerIP;
+  @ViewChild("removeminerName") removeminerName;
+
   updateSaveText() {
     let changedRows = this.changedRows;
 
@@ -61,6 +66,21 @@ export class StatsAndActionsComponent implements OnInit {
 
   updateTime() {
     this.time = new Date();
+  }
+
+  addMiner(ip, name) {
+    let added = this.dashboardDataService.addMiner(ip, name);
+    if (added) {
+      this.addminerName.nativeElement.value = "";
+      this.addminerIP.nativeElement.value = "";
+    }
+  }
+
+  removeMiner(name) {
+    let removed = this.dashboardDataService.removeMiner(name);
+    if (removed) {
+      this.removeminerName.nativeElement.value = "";
+    }
   }
 
   constructor(private dashboardDataService: DashboardDataService) { }
