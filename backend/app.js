@@ -11,6 +11,7 @@ const ssh = new node_ssh();
 const fsPromises = require('fs').promises;
 const pscp = require("./lib/pscp"); // Custom made PSCP wrapper
 const request = require('request-promise-native'); // should be rp instead of request, but request is more readable IMO
+const cors = require('cors');
 
 let globals = {
   commands: {
@@ -24,6 +25,7 @@ let globals = {
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use("/public", express.static(__dirname + "/public"));
+app.use(cors());
 
 //Mongoose/MongoDB setup
 mongoose.connect("mongodb://localhost/miner_monitor");
