@@ -7,6 +7,9 @@ import { DashboardDataService } from '../dashboard-data-service/dashboard-data.s
   templateUrl: './stats-and-actions.component.html',
   styleUrls: ['./stats-and-actions.component.css']
 })
+
+
+
 export class StatsAndActionsComponent implements OnInit {
   time = new Date();
   dateRefresher = timer(0, 1000);
@@ -15,8 +18,6 @@ export class StatsAndActionsComponent implements OnInit {
   changedRows;
   autoModeEnabled;
   maintModeEnabled;
-
-
   updateSaveText() {
     let changedRows = this.changedRows;
 
@@ -49,12 +50,12 @@ export class StatsAndActionsComponent implements OnInit {
     if (mode === "maint") { // enable maint mode
       this.dashboardDataService.setMaintMode(true);
       this.dashboardDataService.setAutoMode(false);
+
     } else if (mode === "auto") { // enable automatic refresh mode
       this.dashboardDataService.setMaintMode(false);
       this.dashboardDataService.setAutoMode(true);
     }
   }
-
 
   updateTime() {
     this.time = new Date();
