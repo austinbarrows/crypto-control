@@ -53,6 +53,11 @@ export class StatsAndActionsComponent implements OnInit {
     this.saveButtonsDisabled = true;
   }
 
+  switchChangedPools() {
+    this.dashboardDataService.switchPools(this.dashboardDataService.changedRows.value);
+    this.resetSaveCard();
+  }
+
   selectMode(mode) {
     if (mode === "maint") { // enable maint mode
       this.dashboardDataService.setMaintMode(true);
