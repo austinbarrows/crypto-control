@@ -9,14 +9,12 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 export class DashboardDataService {
 
   constructor(private http: HttpClient) { }
-  // Responsible for getting data about miners
+
   timerDelay = new BehaviorSubject(30000);
   dataTimer = this.timerDelay.pipe(switchMap((delay) => timer(0, delay)));
   maintModeEnabled = new BehaviorSubject(false);
   autoModeEnabled = new BehaviorSubject(true);
-  }
 
-  //data = this.getData();
   getData() {
     return this.http.get("http://10.0.0.100:8001/miners");
   restartMiner(miner) {
