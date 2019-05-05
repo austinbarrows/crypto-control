@@ -30,6 +30,6 @@
     <td>{{ miner.chipPercent | percent:"0.1" }}</td>
     <td>{{ miner.chipTemp | temperature:"Fahrenheit" }}</td>
     <td>{{ miner.uptime | uptime }}</td>
-    <td><button mat-raised-button [disabled]="disabledArr[i]" (click)="disable(i)">Restart</button></td>
+    <td><button mat-raised-button [disabled]="disabledArr[i]" (click)="restartMiner(miner)">Restart</button></td>
   </tr>
 </table>
