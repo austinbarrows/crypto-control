@@ -108,6 +108,11 @@ export class DashboardDataService {
     }
   }
 
+  updateManually() {
+    this.getData().subscribe({next: (data) => {
+        this.minerData.next(data);
+      }
+    });
   }
 
   getMinerData() {
