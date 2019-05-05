@@ -33,6 +33,25 @@ mat-card-actions {
   margin-top: 16px;
 }
 
+.addminer-ip {
+  margin-right: 8px;
+  width: 150px;
+}
+
+.addminer-name {
+  margin-right: 8px;
+  width: 80px;
+}
+
+.removeminer-name {
+  margin-right: 8px;
+  width: 100px;
+}
+
+h3 {
+  font-weight: 500;
+  margin-bottom: 0;
+}
 
 .delay-input {
   width: 50px;
