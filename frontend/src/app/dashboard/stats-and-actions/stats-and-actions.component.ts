@@ -32,9 +32,14 @@ export class StatsAndActionsComponent implements OnInit {
       this.defaultSaveText();
       this.saveButtonsDisabled = true;
     } else {
-      this.saveBoxText = "Changes made to miners "
+      if (changedRows.length === 1) {
+        this.saveBoxText = "Changes made to miner "
+      } else {
+        this.saveBoxText = "Changes made to miners "
+      }
+
       for (let i = 0; i < changedRows.length; i++) {
-        this.saveBoxText += changedRows[i];
+        this.saveBoxText += changedRows[i].name;
         if (!(i === changedRows.length - 1)) {
           this.saveBoxText += ", ";
         }
