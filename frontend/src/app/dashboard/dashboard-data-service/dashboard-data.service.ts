@@ -77,6 +77,14 @@ export class DashboardDataService {
     this.autoModeEnabled.next(bool);
   }
 
+  getTimerDelay() {
+    return this.timerDelay.asObservable();
+  }
+
+  setTimerDelay(delay) {
+    this.timerDelay.next(delay);
+  }
+
   generateFakeData() {
     let miners = [];
     let numMiners = 10; // The number of miners to generate sample data for
