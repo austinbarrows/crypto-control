@@ -17,6 +17,7 @@ export class TableComponent implements OnInit {
   disabledMiners;
   changedRows = [];
   disabledArr = [];
+  chipPercentThreshold = .90;
 
   /* Note A: ***OUTDATED***
      The code up to the closing A marker abuses the JavaScript type conversion
@@ -59,20 +60,32 @@ export class TableComponent implements OnInit {
     for (let i = 0; i < miners.length; i++) {
       let miner = miners[i];
       this.miners[i] = {};
-      if (miner.commands.stats) {
-        this.miners[i] = {
-          type: miner.commands.stats.STATS[0].Type,
-          primaryPool: miner.commands.pools.POOLS[0].URL,
-          miningAddress: miner.commands.pools.POOLS[0].User,
-          password: data.passwords[miner.name],
-          hashrateRT: miner.commands.stats.STATS[1]["GHS 5s"],
-          targetRT: "N/A",
-          frequency: miner.commands.stats.STATS[1].frequency,
-          chipPercent: miner.commands.stats.STATS[1]["Chip%"],
-          chipTemp: "N/A",
-          uptime: miner.commands.stats.STATS[1].Elapsed,
-          selected: true,
-        };
+      if ("commands" in miner) {
+        if (miner.commands.stats) {
+          this.miners[i] = {
+            type: miner.commands.stats.STATS[0].Type,
+            primaryPool: miner.commands.pools.POOLS[0].URL,
+            miningAddress: miner.commands.pools.POOLS[0].User,
+            password: data.passwords[miner.name],
+            hashrateRT: miner.commands.stats.STATS[1]["GHS 5s"],
+            targetRT: "N/A",
+            frequency: miner.commands.stats.STATS[1].frequency,
+            chipPercent: miner.commands.stats.STATS[1]["Chip%"],
+            chipTemps: "N/A",
+            uptime: miner.commands.stats.STATS[1].Elapsed,
+            selected: true,
+            belowThreshold: (miner.commands.stats.STATS[1]["Chip%"] < this.chipPercentThreshold) ? true : false,
+          };
+
+          let temps = this.findTemps(miner)
+          this.miners[i].chipTemps = temps;
+
+          this.enable(i);
+          } else {
+          this.disable(i);
+        }
+      } else {
+        this.disable(i);
       }
       this.miners[i].name = miner.name;
       this.miners[i].ip = miner.ip;
