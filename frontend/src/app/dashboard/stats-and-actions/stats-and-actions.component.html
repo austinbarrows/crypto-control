@@ -42,6 +42,17 @@
     </mat-card-content>
   </mat-card>
 
+  <mat-card class="mat-elevation-z2 settings-card">
+    <mat-card-title>Settings (temp)</mat-card-title>
+    <mat-card-subtitle></mat-card-subtitle>
+    <mat-card-content>
+      <div>
+        Auto-refresh delay: {{ timerDelay }} ms
+      </div>
+      <div>
+        Change delay: <mat-form-field class="delay-input"><input matInput #changeDelay (change)="this.changeRefreshRate(changeDelay.value)" value="{{ this.timerDelay }}" spellcheck="false"></mat-form-field>ms
+      </div>
+
     </mat-card-content>
   </mat-card>
 
