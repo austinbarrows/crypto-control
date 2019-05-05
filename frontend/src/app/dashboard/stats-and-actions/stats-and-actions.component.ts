@@ -78,6 +78,12 @@ export class StatsAndActionsComponent implements OnInit {
     this.time = new Date();
   }
 
+  changeRefreshRate(delay) {
+    if (delay > this.minDelay) {
+      this.dashboardDataService.setTimerDelay(delay);
+    }
+  }
+
   addMiner(ip, name) {
     let added = this.dashboardDataService.addMiner(ip, name);
     if (added) {
