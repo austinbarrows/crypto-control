@@ -34,6 +34,9 @@ mat-card-actions {
 }
 
 
+.delay-input {
+  width: 50px;
+  text-align: center;
 }
 
 .text {
