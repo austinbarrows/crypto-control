@@ -35,6 +35,10 @@ export class TableComponent implements OnInit {
   }
   /* End A */
 
+  enable(i) {
+    this.disabledArr[i] = false;
+  }
+
   updateChangedRows(miner, pool, user, pass) {
     miner.primaryPool = pool;
     miner.miningAddress = user;
