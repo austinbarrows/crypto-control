@@ -16,7 +16,9 @@ export class DashboardDataService {
   autoModeEnabled = new BehaviorSubject(true);
 
   getData() {
-    return this.http.get("http://10.0.0.100:8001/miners");
+    return this.http.get("http://10.0.0.100:8001/api/miners");
+  }
+
   restartMiner(miner) {
     let url = "http://10.0.0.100:8001/api/miners/" + miner.name + "/restart";
     let options = {
