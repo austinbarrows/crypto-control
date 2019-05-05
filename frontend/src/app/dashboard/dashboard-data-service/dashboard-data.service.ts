@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, timer } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,19 @@ export class DashboardDataService {
   //data = this.getData();
   getData() {
     return this.http.get("http://10.0.0.100:8001/miners");
+  restartMiner(miner) {
+    let url = "http://10.0.0.100:8001/api/miners/" + miner.name + "/restart";
+    let options = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+      }),
+    };
+
+    let body = "";
+
+    return this.http.post(url, body, options);
+  }
+
   }
 
   minerData = new BehaviorSubject(this.generateFakeData()); // **For later: make minerData the central source of data, only get new results from API to minerData
