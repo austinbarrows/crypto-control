@@ -18,6 +18,8 @@ export class StatsAndActionsComponent implements OnInit {
   changedRows;
   autoModeEnabled;
   maintModeEnabled;
+  timerDelay;
+  minDelay = 1000; // Should not be 0 or lower.
   updateSaveText() {
     let changedRows = this.changedRows;
 
@@ -86,6 +88,12 @@ export class StatsAndActionsComponent implements OnInit {
     this.dashboardDataService.getMaintMode().subscribe({
       next: data => {
         this.maintModeEnabled = data;
+      }
+    });
+
+    this.dashboardDataService.getTimerDelay().subscribe({
+      next: data => {
+        this.timerDelay = data;
       }
     });
 
