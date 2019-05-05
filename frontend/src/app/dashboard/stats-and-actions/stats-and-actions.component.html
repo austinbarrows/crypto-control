@@ -2,7 +2,7 @@
   <mat-card class="mat-elevation-z2 modes-card" fxFlex>
     <mat-card-title>Dashboard Mode</mat-card-title>
     <mat-card-subtitle></mat-card-subtitle>
-    <mat-card-content fxLayoutAlign="center center" fxLayoutGap="16px">
+    <mat-card-content fxLayout="row wrap" fxLayoutAlign="center center" fxLayoutGap="16px">
       <button mat-raised-button class="big-icon maint-button" [color]="maintModeEnabled ? 'primary' : 'none'" (click)="selectMode('maint')">
         <div><mat-icon [inline]="true" class="maint-icon-padding">build</mat-icon></div>
         <div class="text">Maintenance</div>
@@ -11,6 +11,15 @@
         <div><mat-icon [inline]="true" class="auto-icon-padding">cached</mat-icon></div>
         <div class="text">Auto-Refresh</div>
       </button>
+
+      <div class="manual-update">
+        <button mat-mini-fab class="" color="accent" (click)="this.dashboardDataService.updateManually()">
+          <mat-icon class="">refresh</mat-icon>
+        </button>
+        &nbsp;&nbsp;Refresh data manually
+      </div>
+    </mat-card-content>
+  </mat-card>
     </mat-card-content>
   </mat-card>
 
