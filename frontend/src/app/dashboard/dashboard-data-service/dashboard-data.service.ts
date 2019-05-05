@@ -75,6 +75,39 @@ export class DashboardDataService {
     return false;
   }
 
+  switchPool(name, poolURL, poolUser, poolPass) {
+    if (name && poolURL && poolUser && poolPass) {
+      let url = "http://10.0.0.100:8001/api/miners/" + name + "/switchpool";
+      let body = new HttpParams();
+      body = body.set("poolURL", poolURL);
+      body = body.set("poolUser", poolUser);
+      body = body.set("poolPass", poolPass);
+
+      let options = {
+        headers: new HttpHeaders({
+          'Content-Type':  'application/x-www-form-urlencoded',
+        }),
+      };
+
+
+      this.http.post(url, body, options).subscribe();
+      return true;
+    }
+    return false;
+  }
+
+  switchPools(miners) {
+    for (let i = 0; i < miners.length; i++) {
+      let miner = miners[i];
+      let name = miner.name;
+      let poolURL = miner.primaryPool;
+      let poolUser = miner.miningAddress;
+      let poolPass = miner.password;
+
+      this.switchPool(name, poolURL, poolUser, poolPass);
+    }
+  }
+
   }
 
   getMinerData() {
