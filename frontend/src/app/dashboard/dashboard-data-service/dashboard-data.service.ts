@@ -10,7 +10,7 @@ export class DashboardDataService {
 
   constructor(private http: HttpClient) { }
 
-  timerDelay = new BehaviorSubject(30000);
+  timerDelay = new BehaviorSubject(10000);
   dataTimer = this.timerDelay.pipe(switchMap((delay) => timer(0, delay)));
   minerData = new BehaviorSubject(null);
   changedRows = new BehaviorSubject([]);
