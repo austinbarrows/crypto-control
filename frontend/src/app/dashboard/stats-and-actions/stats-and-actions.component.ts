@@ -74,7 +74,6 @@ export class StatsAndActionsComponent implements OnInit {
       next: data => {
         this.changedRows = data;
         this.updateSaveText();
-        console.log(data);
       }
     });
 
