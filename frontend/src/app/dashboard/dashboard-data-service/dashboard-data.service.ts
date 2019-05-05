@@ -16,13 +16,14 @@ export class DashboardDataService {
   changedRows = new BehaviorSubject([]);
   maintModeEnabled = new BehaviorSubject(false);
   autoModeEnabled = new BehaviorSubject(true);
+  serverIp = "http://10.0.0.100:8001";
 
   getData() {
-    return this.http.get("http://10.0.0.100:8001/api/miners");
+    return this.http.get(this.serverIp + "/api/miners");
   }
 
   restartMiner(miner) {
-    let url = "http://10.0.0.100:8001/api/miners/" + miner.name + "/restart";
+    let url = this.serverIp + "/api/miners/" + miner.name + "/restart";
     let options = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
@@ -36,7 +37,7 @@ export class DashboardDataService {
 
   addMiner(ip, name) {
     if (ip && name) {
-      let url = "http://10.0.0.100:8001/api/miners/add";
+      let url = this.serverIp + "/api/miners/add";
       let body = new HttpParams();
       body = body.set("ip", ip);
       body = body.set("name", name);
@@ -57,7 +58,7 @@ export class DashboardDataService {
 
   removeMiner(name) {
     if (name) {
-      let url = "http://10.0.0.100:8001/api/miners/remove";
+      let url = this.serverIp + "/api/miners/remove";
       let body = new HttpParams();
       body = body.set("name", name);
       let options = {
@@ -77,7 +78,7 @@ export class DashboardDataService {
 
   switchPool(name, poolURL, poolUser, poolPass) {
     if (name && poolURL && poolUser && poolPass) {
-      let url = "http://10.0.0.100:8001/api/miners/" + name + "/switchpool";
+      let url = this.serverIp + "/api/miners/" + name + "/switchpool";
       let body = new HttpParams();
       body = body.set("poolURL", poolURL);
       body = body.set("poolUser", poolUser);
