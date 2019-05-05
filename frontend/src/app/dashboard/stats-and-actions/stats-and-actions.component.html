@@ -20,6 +20,28 @@
       </div>
     </mat-card-content>
   </mat-card>
+
+  <mat-card class="mat-elevation-z2 addremove-card">
+    <mat-card-title>Add/remove miner</mat-card-title>
+    <mat-card-subtitle></mat-card-subtitle>
+    <mat-card-content>
+      <div>
+        <h3>Add Miner</h3>
+        <mat-form-field class="addminer-ip"><input #addminerIP matInput spellcheck="false" placeholder="IP Address" autocomplete="new-password"></mat-form-field>
+        <mat-form-field class="addminer-name"><input #addminerName matInput spellcheck="false" placeholder="Name" autocomplete="new-password"></mat-form-field>
+        <button mat-raised-button color="primary" (click)="addMiner(addminerIP.value, addminerName.value)">Add</button>
+      </div>
+      <div>
+        <h3>Remove Miner</h3>
+        <mat-form-field class="removeminer-name"><input matInput #removeminerName spellcheck="false" placeholder="Name" autocomplete="new-password"></mat-form-field>
+        <button mat-raised-button color="warn" (click)="removeMiner(removeminerName.value)">Remove</button>
+      </div>
+      <div>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+
     </mat-card-content>
   </mat-card>
 
