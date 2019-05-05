@@ -90,6 +90,10 @@ export class StatsAndActionsComponent implements OnInit {
     }
   }
 
+  updateManually() {
+    this.dashboardDataService.updateManually();
+  }
+
   removeMiner(name) {
     let removed = this.dashboardDataService.removeMiner(name);
     if (removed) {
