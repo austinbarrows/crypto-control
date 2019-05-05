@@ -131,28 +131,21 @@ export class TableComponent implements OnInit {
           this.miners = data;
           this.dashboardDataService.setChangedRows([]);
         }
-        //this.setMiners(data);
-        //console.log(data);
       }
     });
 
     this.dashboardDataService.getChangedRows().subscribe({
       next: data => {
         this.changedRows = data;
-        //this.setMiners(data);
-        console.log(data);
       }
     });
 
     this.dashboardDataService.getMaintMode().subscribe({
       next: data => {
         this.maintModeEnabled = data;
-        console.log(data);
       }
     });
 
-    // x
-    console.log(this.disabledArr);
   }
 
 }
