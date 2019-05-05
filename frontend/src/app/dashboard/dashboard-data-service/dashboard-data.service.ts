@@ -13,6 +13,7 @@ export class DashboardDataService {
   timerDelay = new BehaviorSubject(30000);
   dataTimer = this.timerDelay.pipe(switchMap((delay) => timer(0, delay)));
   minerData = new BehaviorSubject(null);
+  changedRows = new BehaviorSubject([]);
   maintModeEnabled = new BehaviorSubject(false);
   autoModeEnabled = new BehaviorSubject(true);
 
@@ -51,11 +52,7 @@ export class DashboardDataService {
     return this.minerData.asObservable();
   }
 
-
-
-
   // Responsible for synchronizing changed rows of the dashboard table
-  changedRows = new BehaviorSubject([]);
   setChangedRows(rows) {
     this.changedRows.next(rows);
   }
