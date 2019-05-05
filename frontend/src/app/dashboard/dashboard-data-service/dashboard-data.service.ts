@@ -38,8 +38,13 @@ export class DashboardDataService {
   getMinerData() {
     this.dataTimer.subscribe({
       next: (v) => {
-        this.minerData.next(this.generateFakeData())
-        //this.minerData = this.getData();
+        if (this.autoModeEnabled.value) {
+          this.getData().subscribe({
+            next: (data) => {
+              this.minerData.next(data);
+            }
+          });
+        }
       }
     });
 
