@@ -589,11 +589,23 @@ app.get("/whattomine", whattomineMiddleware, function(req, res) {
   res.render("whattomine", {data: data});
 });
 
+app.get("/api/whattomine", whattomineMiddleware, function(req, res) {
+  let data = req.locals.whattomineData;
+  res.send({data: data});
+});
+
 app.get("/miners", refreshAllMiddleware, findAllMiddleware, getAllPasswordsMiddleware, function(req, res) {
   let miners = req.locals.miners;
   let passwords = req.locals.passwords;
   console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX END OF MINERS UPDATE XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
   res.render("miners", {miners: miners, passwords: passwords});
+});
+
+app.get("/api/miners", refreshAllMiddleware, findAllMiddleware, getAllPasswordsMiddleware, function(req, res) {
+  let miners = req.locals.miners;
+  let passwords = req.locals.passwords;
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX END OF MINERS UPDATE XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  res.send({miners: miners, passwords: passwords});
 });
 
 app.get("/miners/new", function(req, res) {
@@ -608,8 +620,16 @@ app.post("/miners", addMinerMiddleware, function(req, res) {
   res.redirect("/miners");
 });
 
+app.post("/api/miners/add", addMinerMiddleware, function(req, res) {
+  res.sendStatus(200);
+});
+
 app.post("/miners/remove", removeMinerMiddleware, function(req, res) {
   res.redirect("/miners");
+});
+
+app.post("/api/miners/remove", removeMinerMiddleware, function(req, res) {
+  res.sendStatus(200);
 });
 
 // Not functional yet
@@ -624,11 +644,11 @@ app.delete("/miners/:name/delete", function(req, res) {
   res.redirect("/miners")
 });
 
-app.post("/miners/:name/restart", restartMinerMiddleware, function(req, res) {
+app.post("/api/miners/:name/restart", restartMinerMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
-app.post("/miners/:name/switchpool", switchPoolMiddleware, function(req, res) {
+app.post("/api/miners/:name/switchpool", switchPoolMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
