@@ -79,6 +79,30 @@ export class TableComponent implements OnInit {
     }
   }
 
+  findTemps(miner) {
+    let type = miner.commands.stats.STATS[0].Type;
+    let arr = [];
+    if (type === "Antminer S9") {
+      arr.push(miner.commands.stats.STATS[1]["temp2_6"]);
+      arr.push(miner.commands.stats.STATS[1]["temp2_7"]);
+      arr.push(miner.commands.stats.STATS[1]["temp2_8"]);
+    } else if (type === "Antminer S9i") {
+      arr.push(miner.commands.stats.STATS[1]["temp2_6"]);
+      arr.push(miner.commands.stats.STATS[1]["temp2_7"]);
+      arr.push(miner.commands.stats.STATS[1]["temp2_8"]);
+    } else if (type === "Antminer S11") {
+      arr.push(miner.commands.stats.STATS[1]["temp3_1"]);
+      arr.push(miner.commands.stats.STATS[1]["temp3_2"]);
+      arr.push(miner.commands.stats.STATS[1]["temp3_3"]);
+    } else if (type === "Antminer L3+") {
+      arr.push(miner.commands.stats.STATS[1]["temp2_1"]);
+      arr.push(miner.commands.stats.STATS[1]["temp2_2"]);
+      arr.push(miner.commands.stats.STATS[1]["temp2_3"]);
+      arr.push(miner.commands.stats.STATS[1]["temp2_4"]);
+    }
+    return arr;
+  }
+
   drop(event) {
     moveItemInArray(this.miners, event.previousIndex, event.currentIndex);
   }
