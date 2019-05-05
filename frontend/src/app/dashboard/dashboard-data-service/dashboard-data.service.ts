@@ -12,6 +12,7 @@ export class DashboardDataService {
 
   timerDelay = new BehaviorSubject(30000);
   dataTimer = this.timerDelay.pipe(switchMap((delay) => timer(0, delay)));
+  minerData = new BehaviorSubject(null);
   maintModeEnabled = new BehaviorSubject(false);
   autoModeEnabled = new BehaviorSubject(true);
 
@@ -34,7 +35,6 @@ export class DashboardDataService {
 
   }
 
-  minerData = new BehaviorSubject(this.generateFakeData()); // **For later: make minerData the central source of data, only get new results from API to minerData
   getMinerData() {
     this.dataTimer.subscribe({
       next: (v) => {
