@@ -15,6 +15,20 @@ mat-card-actions {
   padding-left: 8px;
 }
 .save-card {
+  max-width: calc(400px - 32px);
+  min-width: calc(400px - 32px);
+}
+
+.addremove-card {
+  max-width: calc(400px - 32px);
+  min-width: calc(400px - 32px);
+}
+
+.settings-card {
+  max-width: calc(400px - 32px);
+  min-width: calc(400px - 32px);
+}
+
 
 }
 
