@@ -9,6 +9,8 @@ export class DashboardDataService {
 
   constructor(private http: HttpClient) { }
   // Responsible for getting data about miners
+  maintModeEnabled = new BehaviorSubject(false);
+  autoModeEnabled = new BehaviorSubject(true);
   }
 
   //data = this.getData();
@@ -41,23 +43,18 @@ export class DashboardDataService {
     return this.changedRows.asObservable();
   }
 
-
-
-
-  // Responsible for synchronizing variables (so far, only the dashboard modes)
-  maintModeEnabled = new BehaviorSubject(false);
-  autoModeEnabled = new BehaviorSubject(true);
-
   getMaintMode() {
     return this.maintModeEnabled.asObservable();
-  }
-  getAutoMode() {
-    return this.autoModeEnabled.asObservable();
   }
 
   setMaintMode(bool) {
     this.maintModeEnabled.next(bool);
   }
+
+  getAutoMode() {
+    return this.autoModeEnabled.asObservable();
+  }
+
   setAutoMode(bool) {
     this.autoModeEnabled.next(bool);
   }
