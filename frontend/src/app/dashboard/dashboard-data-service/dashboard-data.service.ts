@@ -34,6 +34,27 @@ export class DashboardDataService {
     return this.http.post(url, body, options);
   }
 
+  addMiner(ip, name) {
+    if (ip && name) {
+      let url = "http://10.0.0.100:8001/api/miners/add";
+      let body = new HttpParams();
+      body = body.set("ip", ip);
+      body = body.set("name", name);
+      let options = {
+        headers: new HttpHeaders({
+          'Content-Type':  'application/x-www-form-urlencoded',
+        }),
+        responseType: "text" as "text", // Empty response body (just status code, effectively) needs this to avoid throwing an error
+      };
+
+      this.http.post(url, body, options).subscribe();
+      this.updateManually();
+
+      return true;
+    }
+    return false;
+  }
+
   }
 
   getMinerData() {
