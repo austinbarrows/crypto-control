@@ -14,6 +14,8 @@ export class TableComponent implements OnInit {
   start = 1;
   tableData;
   miners;
+  disabledMiners;
+  disabledArr = [];
 
   /* Note A: ***OUTDATED***
      The code up to the closing A marker abuses the JavaScript type conversion
@@ -23,17 +25,15 @@ export class TableComponent implements OnInit {
      a falsy element being a truthy one, thus achieving the goal of disabling
      the button linked to such element.
   */
-  disabledArr = [];
 
   disable(i) {
-
-    this.disabledArr[i] = !this.disabledArr[i];
+    this.disabledArr[i] = true;
+    //this.disabledArr[i] = !this.disabledArr[i]; // After revising this...how didn't I see the better (and easier) solution???
     // console.log(this.disabledArr);
 
   }
   /* End A */
 
-  disabledMiners;
   changedRows = [];
   updateChangedRows(miner) {
     console.log(miner);
