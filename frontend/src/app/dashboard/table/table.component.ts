@@ -40,6 +40,10 @@ export class TableComponent implements OnInit {
     this.disabledArr[i] = false;
   }
 
+  restartMiner(miner) {
+    this.dashboardDataService.restartMiner(miner).subscribe();
+  }
+
   updateChangedRows(miner, pool, user, pass) {
     miner.primaryPool = pool;
     miner.miningAddress = user;
