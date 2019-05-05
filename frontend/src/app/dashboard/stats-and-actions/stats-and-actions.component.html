@@ -21,7 +21,7 @@
       Total miners changed: {{ changedRows.length }}
     </mat-card-content>
     <mat-card-actions fxLayoutAlign="flex-start">
-      <button mat-raised-button color="primary" [disabled]="saveButtonsDisabled || !maintModeEnabled" (click)="this.resetSaveCard()">Save</button>
+      <button mat-raised-button color="primary" [disabled]="saveButtonsDisabled || !maintModeEnabled" (click)="this.switchChangedPools()">Save</button>
       <button mat-raised-button [disabled]="saveButtonsDisabled || !maintModeEnabled" (click)="this.resetSaveCard()">Cancel</button>
     </mat-card-actions>
   </mat-card>
