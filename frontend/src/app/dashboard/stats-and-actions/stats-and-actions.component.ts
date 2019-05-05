@@ -9,8 +9,6 @@ import { DashboardDataService } from '../dashboard-data-service/dashboard-data.s
   styleUrls: ['./stats-and-actions.component.css']
 })
 
-
-
 export class StatsAndActionsComponent implements OnInit {
   time = new Date();
   dateRefresher = timer(0, 1000);
@@ -133,7 +131,6 @@ export class StatsAndActionsComponent implements OnInit {
       }
     });
 
-    // x
   }
 
 }
