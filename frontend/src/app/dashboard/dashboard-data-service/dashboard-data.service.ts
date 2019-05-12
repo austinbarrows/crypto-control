@@ -14,6 +14,7 @@ export class DashboardDataService {
   dataTimer = this.timerDelay.pipe(switchMap((delay) => timer(0, delay)));
   minerData = new BehaviorSubject(null);
   changedRows = new BehaviorSubject([]);
+  selectedRows = new BehaviorSubject([]);
   maintModeEnabled = new BehaviorSubject(false);
   autoModeEnabled = new BehaviorSubject(true);
   serverIp = "http://10.0.0.100:8001";
@@ -139,6 +140,15 @@ export class DashboardDataService {
 
   getChangedRows() {
     return this.changedRows.asObservable();
+  }
+
+  setSelectedRows(rows) {
+    console.log(rows);
+    this.selectedRows.next(rows);
+  }
+
+  getSelectedRows() {
+    return this.selectedRows.asObservable();
   }
 
   getMaintMode() {
