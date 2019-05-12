@@ -417,6 +417,29 @@ async function determineConfByType(miner) {
   return {confType, path};
 };
 
+async function addConfig(miner) {
+  let ip = miner.ip;
+  let {confType, path} = await determineConfByType(miner);
+
+  let ignoreHostKey = true;
+  await getConfig(path, confType, ip, ignoreHostKey);
+
+  let config = await fsPromises.readFile(path, {encoding: "utf8"});
+  config = await JSON.parse(config);
+  // Adds restart command to commands group to enable restartMiningSoftware
+  config["api-groups"] = "A:stats:pools:devs:summary:version:restart";
+  config = await JSON.stringify(config);
+
+  let configFileHandle = await fsPromises.open(path, "w");
+  await configFileHandle.writeFile(config, "utf8");
+  await configFileHandle.close();
+  await putConfig(path, confType, ip, ignoreHostKey);
+
+  // Restart miner to enable config changes
+  await restartMiner(miner._id);
+  return true;
+}
+
 async function addMiner(name, ip) {
   let minersByIP = await Miner.find({"ip" : ip});
 
@@ -427,24 +450,7 @@ async function addMiner(name, ip) {
 
     await refreshStatsAndPools(newMiner._id);
     let miner = await Miner.findById(newMiner._id);
-    let {confType, path} = await determineConfByType(miner);
-
-    let ignoreHostKey = true;
-    await getConfig(path, confType, ip, ignoreHostKey);
-
-    let config = await fsPromises.readFile(path, {encoding: "utf8"});
-    config = await JSON.parse(config);
-    // Adds restart command to commands group to enable restartMiningSoftware
-    config["api-groups"] = "A:stats:pools:devs:summary:version:restart";
-    config = await JSON.stringify(config);
-
-    let configFileHandle = await fsPromises.open(path, "w");
-    await configFileHandle.writeFile(config, "utf8");
-    await configFileHandle.close();
-    await putConfig(path, confType, ip, ignoreHostKey);
-
-    // Restart miner to enable config changes
-    await restartMiner(miner._id);
+    await addConfig(miner);
   }
   else {
     console.log("Name or IP already in database (" + name + ", " + ip + ")");
