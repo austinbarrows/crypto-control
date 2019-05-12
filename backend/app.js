@@ -30,7 +30,6 @@ app.use(cors());
 //Mongoose/MongoDB setup
 mongoose.connect("mongodb://localhost/miner_monitor");
 let minerSchema = new mongoose.Schema({
-  _id: ObjectId,
   name: String,
   ip: String,
   port: Number,
@@ -265,20 +264,23 @@ async function refreshAll() {
   // Refresh data for all miners
 
   console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXX START OF MINERS UPDATE XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-  let names = [];
+  let ids = [];
   let refreshes = [];
 
   // Create an array of names by finding all miners in the DB and adding their
   // names to the array
+
   await Miner.find({}, function(err, miners){
     for (let i = 0; i < miners.length; i++) {
-      names.push(miners[i].name);
+      console.log(miners[i]);
+      ids.push(miners[i]._id);
     }
   });
 
+console.log(ids);
   // Create an array of promises representing the refreshed data for each miner
-  for (let i = 0; i < names.length; i++) {
-    refreshes.push(refreshStatsAndPools(names[i]));
+  for (let i = 0; i < ids.length; i++) {
+    refreshes.push(refreshStatsAndPools(ids[i]));
   }
 
   // Wait for data to refresh for all miners
@@ -292,7 +294,8 @@ async function refreshAllMiddleware(req, res, next) {
 };
 
 async function refreshOne(req, res, next) {
-  let refreshed = await refreshStatsAndPools(name);
+  let id = req.params.databaseID;
+  let refreshed = await refreshStatsAndPools(id);
   console.log(refreshed);
   next();
 }
@@ -453,7 +456,8 @@ async function addMiner(name, ip) {
     await addConfig(miner);
   }
   else {
-    console.log("Name or IP already in database (" + name + ", " + ip + ")");
+    let name = minersByIP[0].name;
+    console.log("Miner already in database (" + name + ", " + ip + ")");
     // TODO: Tell user "miner already in DB"
   }
 };
@@ -563,7 +567,6 @@ async function getAllPasswordsMiddleware(req, res, next) {
   req.locals.passwords = await getAllPasswords();
   next();
 };
-//getAllPasswords();
 
 async function whattomineAPICall() {
   console.log(new Date().toLocaleString("en-US", { timezone: "EDT"}));
@@ -609,11 +612,11 @@ app.post("/api/miners/remove", removeMinerMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
-app.post("/api/miners/:name/restart", restartMinerMiddleware, function(req, res) {
+app.post("/api/miners/:databaseID/restart", restartMinerMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
-app.post("/api/miners/:name/switchpool", switchPoolMiddleware, function(req, res) {
+app.post("/api/miners/:databaseID/switchpool", switchPoolMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
