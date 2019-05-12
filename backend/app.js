@@ -548,7 +548,12 @@ async function getAllPasswords() {
       passwords[id] = poolPass;
     }
     catch (error) {
-      console.log(error);
+      if (error.code === "ENOENT") {
+        await addConfig(miners[i]);
+        await restartMiner(miners[i]._id);
+      } else {
+        console.log(error);
+      }
     }
   }
   return passwords;
