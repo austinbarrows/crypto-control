@@ -1,0 +1,5 @@
+*test*
+/local/
+*_cgminer.conf
+*_bmminer.conf
+node_modules

@@ -6,7 +6,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class UptimePipe implements PipeTransform {
 
   transform(seconds: number): any {
-
+    if (seconds === undefined) {
+      return "";
+    } else if (seconds === 0) {
+      return "0s";
+    }
     let times = [];
     let timeString;
     let years = Math.floor(seconds / (60 * 60 * 24 * 365));
@@ -44,12 +48,9 @@ export class UptimePipe implements PipeTransform {
     } else {
       timeString = times[0] + "s";
     }
-    if (seconds !== 0) {
-      return timeString;
-    }
-    else {
-      return "0s";
-    }
+
+    return timeString;
+
   }
 
 }

@@ -1,0 +1,2 @@
+{ "name" : "pscp",
+  "main" : "./pscp.js" }

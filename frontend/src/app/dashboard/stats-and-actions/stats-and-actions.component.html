@@ -1,0 +1,70 @@
+<div fxLayout="row wrap" fxLayoutAlign="start">
+  <mat-card class="mat-elevation-z2 modes-card" fxFlex>
+    <mat-card-title>Dashboard Mode</mat-card-title>
+    <mat-card-subtitle></mat-card-subtitle>
+    <mat-card-content fxLayout="row wrap" fxLayoutAlign="center center" fxLayoutGap="16px">
+      <button mat-raised-button class="big-icon maint-button" [color]="maintModeEnabled ? 'primary' : 'none'" (click)="selectMode('maint')">
+        <div><mat-icon [inline]="true" class="maint-icon-padding">build</mat-icon></div>
+        <div class="text">Maintenance</div>
+      </button>
+      <button mat-raised-button class="big-icon auto-button" [color]="autoModeEnabled ? 'primary' : 'none'" (click)="selectMode('auto')">
+        <div><mat-icon [inline]="true" class="auto-icon-padding">cached</mat-icon></div>
+        <div class="text">Auto-Refresh</div>
+      </button>
+
+      <div class="manual-update">
+        <button mat-mini-fab class="" color="accent" (click)="this.updateManually()">
+          <mat-icon class="">refresh</mat-icon>
+        </button>
+        &nbsp;&nbsp;Refresh data manually
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="mat-elevation-z2 addremove-card">
+    <mat-card-title>Add/remove miner</mat-card-title>
+    <mat-card-subtitle></mat-card-subtitle>
+    <mat-card-content>
+      <div>
+        <h3>Add Miner</h3>
+        <mat-form-field class="addminer-ip"><input #addminerIP matInput spellcheck="false" placeholder="IP Address" autocomplete="new-password"></mat-form-field>
+        <mat-form-field class="addminer-name"><input #addminerName matInput spellcheck="false" placeholder="Name" autocomplete="new-password"></mat-form-field>
+        <button mat-raised-button color="primary" (click)="addMiner(addminerIP.value, addminerName.value)">Add</button>
+      </div>
+      <div>
+        <h3>Remove Miner</h3>
+        <mat-form-field class="removeminer-name"><input matInput #removeminerName spellcheck="false" placeholder="Name" autocomplete="new-password"></mat-form-field>
+        <button mat-raised-button color="warn" (click)="removeMiner(removeminerName.value)">Remove</button>
+      </div>
+      <div>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="mat-elevation-z2 settings-card">
+    <mat-card-title>Settings (temp)</mat-card-title>
+    <mat-card-subtitle></mat-card-subtitle>
+    <mat-card-content>
+      <div>
+        Auto-refresh delay: {{ timerDelay }} ms
+      </div>
+      <div>
+        Change delay: <mat-form-field class="delay-input"><input matInput #changeDelay (change)="this.changeRefreshRate(changeDelay.value)" value="{{ this.timerDelay }}" spellcheck="false"></mat-form-field>ms
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="mat-elevation-z2 save-card" *ngIf="maintModeEnabled">
+    <mat-card-title>Change Confirmation</mat-card-title>
+    <mat-card-content class="mat-card-content-height">
+      {{ saveBoxText }} <br>
+      Total miners changed: {{ changedRows.length }}
+    </mat-card-content>
+    <mat-card-actions fxLayoutAlign="flex-start">
+      <button mat-raised-button color="primary" [disabled]="saveButtonsDisabled || !maintModeEnabled" (click)="this.switchChangedPools()">Save</button>
+      <button mat-raised-button [disabled]="saveButtonsDisabled || !maintModeEnabled" (click)="this.resetSaveCard()">Cancel</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

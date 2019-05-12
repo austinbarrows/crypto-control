@@ -1,0 +1,104 @@
+mat-card {
+  margin-left: 16px;
+  margin-right: 0px;
+  margin-top: 16px;
+  margin-bottom: 0px;
+  width: 400px;
+  max-width: 400px;
+  min-width: 400px;
+  /* display: inline-block; */
+}
+.mat-card-content-height {
+  min-height: 78px;
+}
+mat-card-actions {
+  padding-left: 8px;
+}
+.save-card {
+  max-width: calc(400px - 32px);
+  min-width: calc(400px - 32px);
+}
+
+.addremove-card {
+  max-width: calc(400px - 32px);
+  min-width: calc(400px - 32px);
+}
+
+.settings-card {
+  max-width: calc(400px - 32px);
+  min-width: calc(400px - 32px);
+}
+
+.manual-update {
+  margin-top: 16px;
+}
+
+.addminer-ip {
+  margin-right: 8px;
+  width: 150px;
+}
+
+.addminer-name {
+  margin-right: 8px;
+  width: 80px;
+}
+
+.removeminer-name {
+  margin-right: 8px;
+  width: 100px;
+}
+
+h3 {
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.delay-input {
+  width: 50px;
+  text-align: center;
+}
+
+.text {
+  font-size: 16px;
+}
+
+.auto-icon-padding {
+  padding-top: 38px;
+  padding-bottom: 24px;
+}
+
+.maint-icon-padding {
+  padding-top: 38px;
+  padding-bottom: 24px;
+}
+
+.refresh-icon-padding {
+  padding-top: 5px;
+}
+
+.big-icon {
+  font-size: 100px;
+  min-height: calc(100px + 30px);
+  max-height: calc(100px + 30px);
+  min-width: calc(100px + 30px);
+  max-width: calc(100px + 30px);
+}
+
+.refresh-manually-button {
+  font-size: 30px;
+  max-width: 30px;
+  min-width: 40px;
+}
+
+.test-card {
+
+}
+
+
+.modes-card {
+  margin-left: 16px;
+}
+
+.save-button {
+  background-color: rgba(0, 0, 0, 0.11);
+}

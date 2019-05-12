@@ -1,0 +1,35 @@
+<table class="mat-elevation-z2">
+  <tr class="headers">
+    <th><mat-checkbox [disabled]="!maintModeEnabled"></mat-checkbox></th>
+    <th class="header name-cell">Name</th>
+    <th class="header">IP Address</th>
+    <th class="header">Type</th>
+    <th class="header">Primary Pool</th>
+    <th class="header">Mining Address</th>
+    <th class="header">Password</th>
+    <th class="header">Hashrate (RT)</th>
+    <th class="header">Target HR (RT)</th>
+    <th class="header">Frequency</th>
+    <th class="header">Chip %</th>
+    <th class="header">Chip Temp</th>
+    <th class="header">Uptime</th>
+    <th class="header">Restart</th>
+  </tr>
+
+  <tr *ngFor="let miner of miners; let i = index" class="row">
+    <td><mat-checkbox [checked]="false" [disabled]="!maintModeEnabled"></mat-checkbox></td>
+    <td class="name-cell">{{ miner.name }}</td>
+    <td>{{ miner.ip }}</td>
+    <td>{{ miner.type}}</td>
+    <td><mat-form-field class="pool-input"><input matInput #pool (change)="updateChangedRows(miner, pool.value, address.value, password.value)" value="{{ miner.primaryPool }}" spellcheck="false"></mat-form-field></td>
+    <td><mat-form-field class="address-input"><input matInput #address (change)="updateChangedRows(miner, pool.value, address.value, password.value)" value="{{ miner.miningAddress }}" spellcheck="false"></mat-form-field></td>
+    <td><mat-form-field class="password-input"><input matInput #password (change)="updateChangedRows(miner, pool.value, address.value, password.value)" value="{{ miner.password }}" spellcheck="false"></mat-form-field></td>
+    <td>{{ miner.hashrateRT }}</td>
+    <td>{{ miner.targetRT }}</td>
+    <td>{{ miner.frequency | frequency }}</td>
+    <td [attr.bgcolor]="miner.belowThreshold ? '#ff4d4d' : ''">{{ miner.chipPercent | percent:"0.1" }}</td>
+    <td>{{ miner.chipTemps | temperature:"Celsius" }}</td>
+    <td>{{ miner.uptime | uptime }}</td>
+    <td><button mat-raised-button [disabled]="disabledArr[i]" (click)="restartMiner(miner)">Restart</button></td>
+  </tr>
+</table>

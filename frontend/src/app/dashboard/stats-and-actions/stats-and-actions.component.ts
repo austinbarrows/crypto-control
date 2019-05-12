@@ -1,3 +1,4 @@
+import { ViewChild, ElementRef } from '@angular/core';
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable, interval, timer, BehaviorSubject } from 'rxjs';
 import { DashboardDataService } from '../dashboard-data-service/dashboard-data.service';
@@ -7,6 +8,7 @@ import { DashboardDataService } from '../dashboard-data-service/dashboard-data.s
   templateUrl: './stats-and-actions.component.html',
   styleUrls: ['./stats-and-actions.component.css']
 })
+
 export class StatsAndActionsComponent implements OnInit {
   time = new Date();
   dateRefresher = timer(0, 1000);
@@ -15,7 +17,11 @@ export class StatsAndActionsComponent implements OnInit {
   changedRows;
   autoModeEnabled;
   maintModeEnabled;
-
+  timerDelay;
+  minDelay = 1000; // Should not be 0 or lower.
+  @ViewChild("addminerName") addminerName;
+  @ViewChild("addminerIP") addminerIP;
+  @ViewChild("removeminerName") removeminerName;
 
   updateSaveText() {
     let changedRows = this.changedRows;
@@ -24,9 +30,14 @@ export class StatsAndActionsComponent implements OnInit {
       this.defaultSaveText();
       this.saveButtonsDisabled = true;
     } else {
-      this.saveBoxText = "Changes made to miners "
+      if (changedRows.length === 1) {
+        this.saveBoxText = "Changes made to miner "
+      } else {
+        this.saveBoxText = "Changes made to miners "
+      }
+
       for (let i = 0; i < changedRows.length; i++) {
-        this.saveBoxText += changedRows[i];
+        this.saveBoxText += changedRows[i].name;
         if (!(i === changedRows.length - 1)) {
           this.saveBoxText += ", ";
         }
@@ -45,19 +56,49 @@ export class StatsAndActionsComponent implements OnInit {
     this.saveButtonsDisabled = true;
   }
 
+  switchChangedPools() {
+    this.dashboardDataService.switchPools(this.dashboardDataService.changedRows.value);
+    this.resetSaveCard();
+  }
+
   selectMode(mode) {
     if (mode === "maint") { // enable maint mode
       this.dashboardDataService.setMaintMode(true);
       this.dashboardDataService.setAutoMode(false);
+
     } else if (mode === "auto") { // enable automatic refresh mode
       this.dashboardDataService.setMaintMode(false);
       this.dashboardDataService.setAutoMode(true);
     }
   }
 
-
   updateTime() {
     this.time = new Date();
+  }
+
+  changeRefreshRate(delay) {
+    if (delay > this.minDelay) {
+      this.dashboardDataService.setTimerDelay(delay);
+    }
+  }
+
+  addMiner(ip, name) {
+    let added = this.dashboardDataService.addMiner(ip, name);
+    if (added) {
+      this.addminerName.nativeElement.value = "";
+      this.addminerIP.nativeElement.value = "";
+    }
+  }
+
+  updateManually() {
+    this.dashboardDataService.updateManually();
+  }
+
+  removeMiner(name) {
+    let removed = this.dashboardDataService.removeMiner(name);
+    if (removed) {
+      this.removeminerName.nativeElement.value = "";
+    }
   }
 
   constructor(private dashboardDataService: DashboardDataService) { }
@@ -67,13 +108,12 @@ export class StatsAndActionsComponent implements OnInit {
       next: data => {
         this.updateTime();
       }
-    })
+    });
 
     this.dashboardDataService.getChangedRows().subscribe({
       next: data => {
         this.changedRows = data;
         this.updateSaveText();
-        console.log(data);
       }
     });
 
@@ -89,7 +129,12 @@ export class StatsAndActionsComponent implements OnInit {
       }
     });
 
-    // x
+    this.dashboardDataService.getTimerDelay().subscribe({
+      next: data => {
+        this.timerDelay = data;
+      }
+    });
+
   }
 
 }
