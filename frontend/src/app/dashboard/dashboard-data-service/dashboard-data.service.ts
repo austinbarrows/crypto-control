@@ -57,11 +57,12 @@ export class DashboardDataService {
     return false;
   }
 
-  removeMiner(name) {
-    if (name) {
+  removeMiners() {
+    let miners: any = this.selectedRows.value;
+    for (let i = 0; i < miners.length; i++) {
       let url = this.serverIp + "/api/miners/remove";
       let body = new HttpParams();
-      body = body.set("name", name);
+      body = body.set("databaseID", miners[i]._id);
       let options = {
         headers: new HttpHeaders({
           'Content-Type':  'application/x-www-form-urlencoded',
@@ -70,11 +71,9 @@ export class DashboardDataService {
       };
 
       this.http.post(url, body, options).subscribe();
-      this.updateManually();
-
-      return true;
     }
-    return false;
+    this.setSelectedRows([]);
+    this.updateManually();
   }
 
   switchPool(name, poolURL, poolUser, poolPass) {
