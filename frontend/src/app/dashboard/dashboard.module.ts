@@ -14,6 +14,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSortModule } from '@angular/material/sort';
 
 import { PipeModule } from '../pipe/pipe.module';
 
@@ -36,7 +37,8 @@ import { StatsAndActionsComponent } from './stats-and-actions/stats-and-actions.
     MatToolbarModule,
     MatCheckboxModule,
     FlexLayoutModule,
-    MatIconModule
+    MatIconModule,
+    MatSortModule
   ],
   declarations: [
     DashboardComponent,

@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop'
 import { Observable, interval, timer, BehaviorSubject } from 'rxjs';
 import { DashboardDataService } from '../dashboard-data-service/dashboard-data.service';
+import { MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'dashboard-table',
@@ -14,6 +15,9 @@ export class TableComponent implements OnInit {
   start = 1;
   tableData;
   miners;
+  initialMinersArray;
+  defaultSort = {active: "", direction: ""};
+  sortOnRecv = this.defaultSort;
   disabledMiners;
   allSelected = false;
   changedRows = [];
@@ -37,6 +41,39 @@ export class TableComponent implements OnInit {
 
   }
   /* End A */
+
+  sortTableData(sort) {
+    this.sortOnRecv = sort;
+    console.log(sort);
+    const data = this.initialMinersArray.slice();
+    if (!sort.active || sort.direction === '') {
+      this.miners = data;
+      return;
+    }
+
+
+    this.miners = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'name': return compare(a.name, b.name, isAsc);
+        case 'ip': return compare(a.ip, b.ip, isAsc);
+        case 'type': return compare(a.type, b.type, isAsc);
+        case 'pool': return compare(a.primaryPool, b.primaryPool, isAsc);
+        case 'address': return compare(a.miningAddress, b.miningAddress, isAsc);
+        case 'password': return compare(a.password, b.password, isAsc);
+        case 'hashrate': return compare(a.hashrateRT, b.hashrateRT, isAsc);
+        case 'targetHR': return compare(a.targetRT, b.targetRT, isAsc);
+        case 'frequency': return compare(a.frequency, b.frequency, isAsc);
+        case 'chipPercent': return compare(a.chipPercent, b.chipPercent, isAsc);
+        case 'temp': return compare(a.chipTemps[0] || Number.MIN_SAFE_INTEGER, b.chipTemps[0] || Number.MIN_SAFE_INTEGER, isAsc);
+        case 'uptime': return compare(a.uptime, b.uptime, isAsc);
+        default: return 0;
+      }
+    });
+  }
+  /**  Copyright 2019 Google Inc. All Rights Reserved.
+    Use of this source code is governed by an MIT-style license that
+    can be found in the LICENSE file at http://angular.io/license */
 
   updateSelectedRows(miner, minerIndex, event) {
     let contains = false;
@@ -104,24 +141,25 @@ export class TableComponent implements OnInit {
   setMiners(data) {
     let miners = data.miners;
     this.miners = [];
-    console.log(miners.length)
+    console.log("Miner amount: " + miners.length)
     for (let i = 0; i < miners.length; i++) {
       let miner = miners[i];
       this.miners[i] = {};
       if ("commands" in miner) {
         if (miner.commands.stats) {
           this.miners[i] = {
+            _id: miner._id,
             type: miner.commands.stats.STATS[0].Type,
             primaryPool: miner.commands.pools.POOLS[0].URL,
             miningAddress: miner.commands.pools.POOLS[0].User,
-            password: data.passwords[miner.name],
+            password: data.passwords[miner._id],
             hashrateRT: miner.commands.stats.STATS[1]["GHS 5s"],
             targetRT: "N/A",
             frequency: miner.commands.stats.STATS[1].frequency,
             chipPercent: miner.commands.stats.STATS[1]["Chip%"],
             chipTemps: "N/A",
             uptime: miner.commands.stats.STATS[1].Elapsed,
-            selected: true,
+            selected: false,
             belowThreshold: (miner.commands.stats.STATS[1]["Chip%"] < this.chipPercentThreshold) ? true : false,
           };
 
@@ -130,13 +168,34 @@ export class TableComponent implements OnInit {
 
           this.enable(i);
           } else {
+            this.miners[i] = {
+              _id: miner._id,
+              type: "",
+              primaryPool: "",
+              miningAddress: "",
+              password: "",
+              hashrateRT: "",
+              targetRT: "",
+              frequency: "",
+              chipPercent: "",
+              chipTemps: [],
+              uptime: "",
+              selected: false,
+              belowThreshold: false,
+            };
           this.disable(i);
         }
       } else {
         this.disable(i);
       }
+      this.miners[i]._id = miner._id;
       this.miners[i].name = miner.name;
       this.miners[i].ip = miner.ip;
+    }
+    console.log(this.miners);
+    this.initialMinersArray = this.miners;
+    if (this.sortOnRecv) {
+      this.sortTableData(this.sortOnRecv);
     }
   }
 
@@ -207,3 +266,10 @@ export class TableComponent implements OnInit {
   }
 
 }
+
+function compare(a: number | string, b: number | string, isAsc: boolean) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
+/**  Copyright 2019 Google Inc. All Rights Reserved.
+  Use of this source code is governed by an MIT-style license that
+  can be found in the LICENSE file at http://angular.io/license */

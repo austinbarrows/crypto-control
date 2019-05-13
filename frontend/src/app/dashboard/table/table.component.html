@@ -1,18 +1,18 @@
-<table class="mat-elevation-z2">
+<table matSort (matSortChange)="sortTableData($event)" class="mat-elevation-z2" [matSortActive]="defaultSort.active" [matSortDirection]="defaultSort.direction">
   <tr class="headers">
-    <th><mat-checkbox [disabled]="!maintModeEnabled"></mat-checkbox></th>
-    <th class="header name-cell">Name</th>
-    <th class="header">IP Address</th>
-    <th class="header">Type</th>
-    <th class="header">Primary Pool</th>
-    <th class="header">Mining Address</th>
-    <th class="header">Password</th>
-    <th class="header">Hashrate (RT)</th>
-    <th class="header">Target HR (RT)</th>
-    <th class="header">Frequency</th>
-    <th class="header">Chip %</th>
-    <th class="header">Chip Temp</th>
-    <th class="header">Uptime</th>
+    <th><mat-checkbox [checked]="this.allSelected" [disabled]="!maintModeEnabled" (change)="selectAll($event)"></mat-checkbox></th>
+    <th mat-sort-header="name" class="header name-cell">Name</th>
+    <th mat-sort-header="ip" class="header">IP Address</th>
+    <th mat-sort-header="type" class="header">Type</th>
+    <th mat-sort-header="pool" class="header">Primary Pool</th>
+    <th mat-sort-header="address" class="header">Mining Address</th>
+    <th mat-sort-header="password" class="header">Password</th>
+    <th mat-sort-header="hashrate" class="header">Hashrate (RT)</th>
+    <th mat-sort-header="targetHR" class="header">Target HR (RT)</th>
+    <th mat-sort-header="frequency" class="header">Frequency</th>
+    <th mat-sort-header="chipPercent" class="header">Chip %</th>
+    <th mat-sort-header="temp" class="header">Chip Temp</th>
+    <th mat-sort-header="uptime" class="header">Uptime</th>
     <th class="header">Restart</th>
   </tr>
 
