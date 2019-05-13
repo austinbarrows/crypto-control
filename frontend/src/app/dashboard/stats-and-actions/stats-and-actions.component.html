@@ -33,8 +33,8 @@
       </div>
       <div>
         <h3>Remove Miner</h3>
-        <mat-form-field class="removeminer-name"><input matInput #removeminerName spellcheck="false" placeholder="Name" autocomplete="new-password"></mat-form-field>
-        <button mat-raised-button color="warn" (click)="removeMiner(removeminerName.value)">Remove</button>
+        {{ removeText }} <br><br>
+        <button mat-raised-button [disabled]="this.removeButtonDisabled" color="warn" (click)="removeMiners()">Remove</button>
       </div>
       <div>
 
@@ -60,11 +60,13 @@
     <mat-card-title>Change Confirmation</mat-card-title>
     <mat-card-content class="mat-card-content-height">
       {{ saveBoxText }} <br>
-      Total miners changed: {{ changedRows.length }}
+      Total miners changed: {{ changedRows.length }} <br>
+      <br>
+      {{ saveBoxText2 }}
     </mat-card-content>
-    <mat-card-actions fxLayoutAlign="flex-start">
-      <button mat-raised-button color="primary" [disabled]="saveButtonsDisabled || !maintModeEnabled" (click)="this.switchChangedPools()">Save</button>
-      <button mat-raised-button [disabled]="saveButtonsDisabled || !maintModeEnabled" (click)="this.resetSaveCard()">Cancel</button>
+    <mat-card-actions class="save-cancel">
+      <button mat-raised-button color="primary" [disabled]="saveButtonDisabled || !maintModeEnabled" (click)="this.switchPools()">Save</button>
+      <button mat-raised-button [disabled]="cancelButtonDisabled || !maintModeEnabled" (click)="this.resetSaveCard()">Cancel</button>
     </mat-card-actions>
   </mat-card>
 </div>
