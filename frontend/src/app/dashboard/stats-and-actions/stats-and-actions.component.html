@@ -56,9 +56,9 @@
     </mat-card-content>
   </mat-card>
 
-  <mat-card class="mat-elevation-z2 save-card" *ngIf="maintModeEnabled">
+  <mat-card class="mat-elevation-z2 save-card" *ngIf="maintModeEnabled" fxLayout="column">
     <mat-card-title>Change Confirmation</mat-card-title>
-    <mat-card-content class="mat-card-content-height">
+    <mat-card-content class="mat-card-content-height" fxFlex>
       {{ saveBoxText }} <br>
       Total miners changed: {{ changedRows.length }} <br>
       <br>
