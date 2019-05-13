@@ -30,6 +30,6 @@
     <td [attr.bgcolor]="miner.belowThreshold ? '#ff4d4d' : ''">{{ miner.chipPercent | percent:"0.1" }}</td>
     <td>{{ miner.chipTemps | temperature:"Celsius" }}</td>
     <td>{{ miner.uptime | uptime }}</td>
-    <td><button mat-raised-button [disabled]="disabledArr[i]" (click)="restartMiner(miner)">Restart</button></td>
+    <td><button mat-raised-button [disabled]="miner.restartDisabled" (click)="restartMiner(miner)">Restart</button></td>
   </tr>
 </table>

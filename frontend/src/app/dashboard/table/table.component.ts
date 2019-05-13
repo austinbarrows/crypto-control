@@ -22,25 +22,7 @@ export class TableComponent implements OnInit {
   allSelected = false;
   changedRows = [];
   selectedRows = [];
-  disabledArr = [];
   chipPercentThreshold = .90;
-
-  /* Note A: ***OUTDATED***
-     The code up to the closing A marker abuses the JavaScript type conversion
-     heavily. Due to the falsy nature of an empty array, uninitialized elements
-     cause all buttons to be enabled by default. When a specific falsy
-     element is inverted, it becomes true due to the imperative opposite of
-     a falsy element being a truthy one, thus achieving the goal of disabling
-     the button linked to such element.
-  */
-
-  disable(i) {
-    this.disabledArr[i] = true;
-    //this.disabledArr[i] = !this.disabledArr[i]; // After revising this...how didn't I see the better (and easier) solution???
-    // console.log(this.disabledArr);
-
-  }
-  /* End A */
 
   sortTableData(sort) {
     this.sortOnRecv = sort;
@@ -117,10 +99,6 @@ export class TableComponent implements OnInit {
     }
   }
 
-  enable(i) {
-    this.disabledArr[i] = false;
-  }
-
   restartMiner(miner) {
     this.dashboardDataService.restartMiner(miner).subscribe();
   }
@@ -160,13 +138,13 @@ export class TableComponent implements OnInit {
             chipTemps: "N/A",
             uptime: miner.commands.stats.STATS[1].Elapsed,
             selected: false,
+            restartDisabled: false,
             belowThreshold: (miner.commands.stats.STATS[1]["Chip%"] < this.chipPercentThreshold) ? true : false,
           };
 
           let temps = this.findTemps(miner)
           this.miners[i].chipTemps = temps;
 
-          this.enable(i);
           } else {
             this.miners[i] = {
               _id: miner._id,
@@ -181,12 +159,12 @@ export class TableComponent implements OnInit {
               chipTemps: [],
               uptime: "",
               selected: false,
+              restartDisabled: true,
               belowThreshold: false,
             };
-          this.disable(i);
-        }
+          }
       } else {
-        this.disable(i);
+        this.miners[i].restartDisabled = true
       }
       this.miners[i]._id = miner._id;
       this.miners[i].name = miner.name;
