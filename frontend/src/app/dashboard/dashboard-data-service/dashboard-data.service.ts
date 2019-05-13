@@ -160,7 +160,6 @@ export class DashboardDataService {
   }
 
   setSelectedRows(rows) {
-    console.log(rows);
     this.selectedRows.next(rows);
     this.computeChangedAndSelectedRows();
   }
