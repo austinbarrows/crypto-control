@@ -6,8 +6,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class TemperaturePipe implements PipeTransform {
 
   transform(value: any, system: string): any {
-    if (value === undefined) {
+    if (value === undefined || value === "") {
       return "";
+    } else if (value.length === 0) {
+      return ""
     }
 
     let arr = value;

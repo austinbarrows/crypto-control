@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop'
 import { Observable, interval, timer, BehaviorSubject } from 'rxjs';
 import { DashboardDataService } from '../dashboard-data-service/dashboard-data.service';
+import { MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'dashboard-table',
@@ -14,30 +15,88 @@ export class TableComponent implements OnInit {
   start = 1;
   tableData;
   miners;
+  initialMinersArray;
+  defaultSort = {active: "", direction: ""};
+  sortOnRecv = this.defaultSort;
   disabledMiners;
+  allSelected = false;
   changedRows = [];
-  disabledArr = [];
+  selectedRows = [];
   chipPercentThreshold = .90;
 
-  /* Note A: ***OUTDATED***
-     The code up to the closing A marker abuses the JavaScript type conversion
-     heavily. Due to the falsy nature of an empty array, uninitialized elements
-     cause all buttons to be enabled by default. When a specific falsy
-     element is inverted, it becomes true due to the imperative opposite of
-     a falsy element being a truthy one, thus achieving the goal of disabling
-     the button linked to such element.
-  */
+  sortTableData(sort) {
+    this.sortOnRecv = sort;
+    console.log(sort);
+    const data = this.initialMinersArray.slice();
+    if (!sort.active || sort.direction === '') {
+      this.miners = data;
+      return;
+    }
 
-  disable(i) {
-    this.disabledArr[i] = true;
-    //this.disabledArr[i] = !this.disabledArr[i]; // After revising this...how didn't I see the better (and easier) solution???
-    // console.log(this.disabledArr);
 
+    this.miners = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'name': return compare(a.name, b.name, isAsc);
+        case 'ip': return compare(a.ip, b.ip, isAsc);
+        case 'type': return compare(a.type, b.type, isAsc);
+        case 'pool': return compare(a.primaryPool, b.primaryPool, isAsc);
+        case 'address': return compare(a.miningAddress, b.miningAddress, isAsc);
+        case 'password': return compare(a.password, b.password, isAsc);
+        case 'hashrate': return compare(a.hashrateRT, b.hashrateRT, isAsc);
+        case 'targetHR': return compare(a.targetRT, b.targetRT, isAsc);
+        case 'frequency': return compare(a.frequency, b.frequency, isAsc);
+        case 'chipPercent': return compare(a.chipPercent, b.chipPercent, isAsc);
+        case 'temp': return compare(a.chipTemps[0] || Number.MIN_SAFE_INTEGER, b.chipTemps[0] || Number.MIN_SAFE_INTEGER, isAsc);
+        case 'uptime': return compare(a.uptime, b.uptime, isAsc);
+        default: return 0;
+      }
+    });
   }
-  /* End A */
+  /**  Copyright 2019 Google Inc. All Rights Reserved.
+    Use of this source code is governed by an MIT-style license that
+    can be found in the LICENSE file at http://angular.io/license */
 
-  enable(i) {
-    this.disabledArr[i] = false;
+  updateSelectedRows(miner, minerIndex, event) {
+    let contains = false;
+    let index = -1;
+
+    for (let i = 0; i < this.selectedRows.length; i++) {
+      if (this.selectedRows[i]._id === miner._id) {
+        index = i;
+        contains = true;
+        break;
+      }
+    }
+
+    if(event.checked) {
+
+      this.miners[minerIndex].selected = true;
+      if (contains) {
+        this.selectedRows.splice(index, 1);
+      }
+
+      this.selectedRows.push(miner);
+      this.dashboardDataService.setSelectedRows(this.selectedRows);
+      if (this.miners.length === this.selectedRows.length) {
+        this.allSelected = true;
+      }
+    } else {
+      this.allSelected = false;
+      this.miners[minerIndex].selected = false;
+      if (contains) {
+        this.selectedRows.splice(index, 1);
+      }
+
+      this.dashboardDataService.setSelectedRows(this.selectedRows);
+    }
+  }
+
+  selectAll(event) {
+    this.allSelected = true;
+    for (let i = 0; i < this.miners.length; i++) {
+      this.updateSelectedRows(this.miners[i], i, event)
+    }
   }
 
   restartMiner(miner) {
@@ -60,39 +119,61 @@ export class TableComponent implements OnInit {
   setMiners(data) {
     let miners = data.miners;
     this.miners = [];
-    console.log(miners.length)
+    console.log("Miner amount: " + miners.length)
     for (let i = 0; i < miners.length; i++) {
       let miner = miners[i];
       this.miners[i] = {};
       if ("commands" in miner) {
         if (miner.commands.stats) {
           this.miners[i] = {
+            _id: miner._id,
             type: miner.commands.stats.STATS[0].Type,
             primaryPool: miner.commands.pools.POOLS[0].URL,
             miningAddress: miner.commands.pools.POOLS[0].User,
-            password: data.passwords[miner.name],
+            password: data.passwords[miner._id],
             hashrateRT: miner.commands.stats.STATS[1]["GHS 5s"],
             targetRT: "N/A",
             frequency: miner.commands.stats.STATS[1].frequency,
             chipPercent: miner.commands.stats.STATS[1]["Chip%"],
             chipTemps: "N/A",
             uptime: miner.commands.stats.STATS[1].Elapsed,
-            selected: true,
+            selected: false,
+            restartDisabled: false,
             belowThreshold: (miner.commands.stats.STATS[1]["Chip%"] < this.chipPercentThreshold) ? true : false,
           };
 
           let temps = this.findTemps(miner)
           this.miners[i].chipTemps = temps;
 
-          this.enable(i);
           } else {
-          this.disable(i);
-        }
+            this.miners[i] = {
+              _id: miner._id,
+              type: "",
+              primaryPool: "",
+              miningAddress: "",
+              password: "",
+              hashrateRT: "",
+              targetRT: "",
+              frequency: "",
+              chipPercent: "",
+              chipTemps: [],
+              uptime: "",
+              selected: false,
+              restartDisabled: true,
+              belowThreshold: false,
+            };
+          }
       } else {
-        this.disable(i);
+        this.miners[i].restartDisabled = true
       }
+      this.miners[i]._id = miner._id;
       this.miners[i].name = miner.name;
       this.miners[i].ip = miner.ip;
+    }
+    console.log(this.miners);
+    this.initialMinersArray = this.miners;
+    if (this.sortOnRecv) {
+      this.sortTableData(this.sortOnRecv);
     }
   }
 
@@ -134,6 +215,7 @@ export class TableComponent implements OnInit {
         if (!this.maintModeEnabled) {
           this.miners = data;
           this.dashboardDataService.setChangedRows([]);
+          this.dashboardDataService.setSelectedRows([]);
           if (data) {
             this.setMiners(data);
           }
@@ -147,6 +229,12 @@ export class TableComponent implements OnInit {
       }
     });
 
+    this.dashboardDataService.getSelectedRows().subscribe({
+      next: data => {
+        this.selectedRows = data;
+      }
+    });
+
     this.dashboardDataService.getMaintMode().subscribe({
       next: data => {
         this.maintModeEnabled = data;
@@ -156,3 +244,10 @@ export class TableComponent implements OnInit {
   }
 
 }
+
+function compare(a: number | string, b: number | string, isAsc: boolean) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
+/**  Copyright 2019 Google Inc. All Rights Reserved.
+  Use of this source code is governed by an MIT-style license that
+  can be found in the LICENSE file at http://angular.io/license */

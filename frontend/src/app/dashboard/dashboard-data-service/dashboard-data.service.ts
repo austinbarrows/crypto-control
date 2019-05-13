@@ -14,6 +14,8 @@ export class DashboardDataService {
   dataTimer = this.timerDelay.pipe(switchMap((delay) => timer(0, delay)));
   minerData = new BehaviorSubject(null);
   changedRows = new BehaviorSubject([]);
+  selectedRows = new BehaviorSubject([]);
+  changedAndSelectedRows = new BehaviorSubject([]);
   maintModeEnabled = new BehaviorSubject(false);
   autoModeEnabled = new BehaviorSubject(true);
   serverIp = "http://10.0.0.100:8001";
@@ -23,7 +25,7 @@ export class DashboardDataService {
   }
 
   restartMiner(miner) {
-    let url = this.serverIp + "/api/miners/" + miner.name + "/restart";
+    let url = this.serverIp + "/api/miners/" + miner._id + "/restart";
     let options = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
@@ -56,11 +58,12 @@ export class DashboardDataService {
     return false;
   }
 
-  removeMiner(name) {
-    if (name) {
+  removeMiners() {
+    let miners: any = this.selectedRows.value;
+    for (let i = 0; i < miners.length; i++) {
       let url = this.serverIp + "/api/miners/remove";
       let body = new HttpParams();
-      body = body.set("name", name);
+      body = body.set("databaseID", miners[i]._id);
       let options = {
         headers: new HttpHeaders({
           'Content-Type':  'application/x-www-form-urlencoded',
@@ -69,16 +72,14 @@ export class DashboardDataService {
       };
 
       this.http.post(url, body, options).subscribe();
-      this.updateManually();
-
-      return true;
     }
-    return false;
+    this.setSelectedRows([]);
+    this.updateManually();
   }
 
-  switchPool(name, poolURL, poolUser, poolPass) {
-    if (name && poolURL && poolUser && poolPass) {
-      let url = this.serverIp + "/api/miners/" + name + "/switchpool";
+  switchPool(id, poolURL, poolUser, poolPass) {
+    if (id && poolURL && poolUser && poolPass) {
+      let url = this.serverIp + "/api/miners/" + id + "/switchpool";
       let body = new HttpParams();
       body = body.set("poolURL", poolURL);
       body = body.set("poolUser", poolUser);
@@ -100,12 +101,12 @@ export class DashboardDataService {
   switchPools(miners) {
     for (let i = 0; i < miners.length; i++) {
       let miner = miners[i];
-      let name = miner.name;
+      let id = miner._id;
       let poolURL = miner.primaryPool;
       let poolUser = miner.miningAddress;
       let poolPass = miner.password;
 
-      this.switchPool(name, poolURL, poolUser, poolPass);
+      this.switchPool(id, poolURL, poolUser, poolPass);
     }
   }
 
@@ -132,13 +133,47 @@ export class DashboardDataService {
     return this.minerData.asObservable();
   }
 
+  computeChangedAndSelectedRows() {
+    let changedAndSelected = [];
+    let changedRows: any = this.changedRows.value;
+    let selectedRows: any = this.selectedRows.value;
+
+    for (let i = 0; i < changedRows.length; i++) { // Testing which changedRows are also selected
+      for (let j = 0; j < selectedRows.length; j++) {
+        if (changedRows[i]._id === selectedRows[j]._id) {
+          changedAndSelected.push(changedRows[i]);
+        }
+      }
+    }
+
+    this.setChangedAndSelectedRows(changedAndSelected);
+  }
+
   // Responsible for synchronizing changed rows of the dashboard table
   setChangedRows(rows) {
     this.changedRows.next(rows);
+    this.computeChangedAndSelectedRows();
   }
 
   getChangedRows() {
     return this.changedRows.asObservable();
+  }
+
+  setSelectedRows(rows) {
+    this.selectedRows.next(rows);
+    this.computeChangedAndSelectedRows();
+  }
+
+  getSelectedRows() {
+    return this.selectedRows.asObservable();
+  }
+
+  getChangedAndSelectedRows() {
+    return this.changedAndSelectedRows.asObservable();
+  }
+
+  setChangedAndSelectedRows(rows) {
+    this.changedAndSelectedRows.next(rows);
   }
 
   getMaintMode() {

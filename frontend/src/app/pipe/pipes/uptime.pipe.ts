@@ -5,8 +5,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class UptimePipe implements PipeTransform {
 
-  transform(seconds: number): any {
-    if (seconds === undefined) {
+  transform(seconds): any {
+    if (seconds === undefined || seconds === "") {
       return "";
     } else if (seconds === 0) {
       return "0s";

@@ -12,9 +12,15 @@ import { DashboardDataService } from '../dashboard-data-service/dashboard-data.s
 export class StatsAndActionsComponent implements OnInit {
   time = new Date();
   dateRefresher = timer(0, 1000);
-  saveButtonsDisabled = true;
+  saveButtonDisabled = true;
+  cancelButtonDisabled = true;
+  removeButtonDisabled = true;
   saveBoxText = "No current changes";
-  changedRows;
+  saveBoxText2 = "No miners changed and selected";
+  removeText = "No miners selected";
+  changedRows = [];
+  selectedRows = [];
+  changedAndSelectedRows = [];
   autoModeEnabled;
   maintModeEnabled;
   timerDelay;
@@ -24,25 +30,48 @@ export class StatsAndActionsComponent implements OnInit {
   @ViewChild("removeminerName") removeminerName;
 
   updateSaveText() {
-    let changedRows = this.changedRows;
-
-    if(!changedRows.length) {
+    if(!this.changedRows.length) {
       this.defaultSaveText();
-      this.saveButtonsDisabled = true;
+      this.saveButtonDisabled = true;
+      this.cancelButtonDisabled = true;
     } else {
-      if (changedRows.length === 1) {
+      if (this.changedRows.length === 1) {
         this.saveBoxText = "Changes made to miner "
       } else {
         this.saveBoxText = "Changes made to miners "
       }
 
-      for (let i = 0; i < changedRows.length; i++) {
-        this.saveBoxText += changedRows[i].name;
-        if (!(i === changedRows.length - 1)) {
+      for (let i = 0; i < this.changedRows.length; i++) {
+        this.saveBoxText += this.changedRows[i].name;
+        if (!(i === this.changedRows.length - 1)) {
           this.saveBoxText += ", ";
         }
       }
-      this.saveButtonsDisabled = false;
+      this.cancelButtonDisabled = false;
+    }
+  }
+
+  updateSaveText2() {
+    if(this.changedAndSelectedRows.length === 0) {
+      this.defaultSaveText2();
+      this.saveButtonDisabled = true;
+    } else {
+      for (let i = 0; i < this.changedAndSelectedRows.length; i++) {
+        if (i === 0) {
+          if (this.changedAndSelectedRows.length === 1) {
+            this.saveBoxText2 = "Miner changed and selected: ";
+          } else {
+            this.saveBoxText2 = "Miners changed and selected: ";
+          }
+
+          this.saveButtonDisabled = false;
+        }
+
+        this.saveBoxText2 += this.changedAndSelectedRows[i].name;
+        if (!(i === this.changedAndSelectedRows.length - 1)) {
+          this.saveBoxText2 += ", ";
+        }
+      }
     }
   }
 
@@ -50,14 +79,44 @@ export class StatsAndActionsComponent implements OnInit {
     this.saveBoxText = "No current changes";
   }
 
+  defaultSaveText2() {
+    this.saveBoxText2 = "No miners changed and selected";
+  }
+
+  updateRemoveText() {
+
+    if(!this.selectedRows.length) {
+      this.defaultRemoveText();
+      this.removeButtonDisabled = true;
+    } else {
+      if (this.selectedRows.length === 1) {
+        this.removeText = "Miner selected: "
+      } else {
+        this.removeText = "Miners selected: "
+      }
+
+      for (let i = 0; i < this.selectedRows.length; i++) {
+        this.removeText += this.selectedRows[i].name;
+        if (!(i === this.selectedRows.length - 1)) {
+          this.removeText += ", ";
+        }
+      }
+      this.removeButtonDisabled = false;
+    }
+  }
+
+  defaultRemoveText() {
+    this.removeText = "No miners selected";
+  }
+
   resetSaveCard() {
     this.dashboardDataService.setChangedRows([]);
     //this.updateSaveText();
-    this.saveButtonsDisabled = true;
+    this.saveButtonDisabled = true;
   }
 
-  switchChangedPools() {
-    this.dashboardDataService.switchPools(this.dashboardDataService.changedRows.value);
+  switchPools() {
+    this.dashboardDataService.switchPools(this.dashboardDataService.changedAndSelectedRows.value);
     this.resetSaveCard();
   }
 
@@ -94,11 +153,9 @@ export class StatsAndActionsComponent implements OnInit {
     this.dashboardDataService.updateManually();
   }
 
-  removeMiner(name) {
-    let removed = this.dashboardDataService.removeMiner(name);
-    if (removed) {
-      this.removeminerName.nativeElement.value = "";
-    }
+  removeMiners() {
+    this.dashboardDataService.removeMiners();
+    this.dashboardDataService.setSelectedRows([]);
   }
 
   constructor(private dashboardDataService: DashboardDataService) { }
@@ -110,10 +167,24 @@ export class StatsAndActionsComponent implements OnInit {
       }
     });
 
+    this.dashboardDataService.getSelectedRows().subscribe({
+      next: data => {
+        this.selectedRows = data;
+        this.updateRemoveText();
+      }
+    });
+
     this.dashboardDataService.getChangedRows().subscribe({
       next: data => {
         this.changedRows = data;
         this.updateSaveText();
+      }
+    });
+
+    this.dashboardDataService.getChangedAndSelectedRows().subscribe({
+      next: data => {
+        this.changedAndSelectedRows = data;
+        this.updateSaveText2();
       }
     });
 
