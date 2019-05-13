@@ -17,7 +17,7 @@
   </tr>
 
   <tr *ngFor="let miner of miners; let i = index" class="row">
-    <td><mat-checkbox [checked]="false" [disabled]="!maintModeEnabled"></mat-checkbox></td>
+    <td><mat-checkbox [checked]="miner.selected" [disabled]="!maintModeEnabled" (change)="updateSelectedRows(miner, i, $event)"></mat-checkbox></td>
     <td class="name-cell">{{ miner.name }}</td>
     <td>{{ miner.ip }}</td>
     <td>{{ miner.type}}</td>

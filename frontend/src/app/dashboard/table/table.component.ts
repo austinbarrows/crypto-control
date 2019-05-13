@@ -15,7 +15,9 @@ export class TableComponent implements OnInit {
   tableData;
   miners;
   disabledMiners;
+  allSelected = false;
   changedRows = [];
+  selectedRows = [];
   disabledArr = [];
   chipPercentThreshold = .90;
 
@@ -35,6 +37,48 @@ export class TableComponent implements OnInit {
 
   }
   /* End A */
+
+  updateSelectedRows(miner, minerIndex, event) {
+    let contains = false;
+    let index = -1;
+
+    for (let i = 0; i < this.selectedRows.length; i++) {
+      if (this.selectedRows[i]._id === miner._id) {
+        index = i;
+        contains = true;
+        break;
+      }
+    }
+
+    if(event.checked) {
+
+      this.miners[minerIndex].selected = true;
+      if (contains) {
+        this.selectedRows.splice(index, 1);
+      }
+
+      this.selectedRows.push(miner);
+      this.dashboardDataService.setSelectedRows(this.selectedRows);
+      if (this.miners.length === this.selectedRows.length) {
+        this.allSelected = true;
+      }
+    } else {
+      this.allSelected = false;
+      this.miners[minerIndex].selected = false;
+      if (contains) {
+        this.selectedRows.splice(index, 1);
+      }
+
+      this.dashboardDataService.setSelectedRows(this.selectedRows);
+    }
+  }
+
+  selectAll(event) {
+    this.allSelected = true;
+    for (let i = 0; i < this.miners.length; i++) {
+      this.updateSelectedRows(this.miners[i], i, event)
+    }
+  }
 
   enable(i) {
     this.disabledArr[i] = false;
@@ -134,6 +178,7 @@ export class TableComponent implements OnInit {
         if (!this.maintModeEnabled) {
           this.miners = data;
           this.dashboardDataService.setChangedRows([]);
+          this.dashboardDataService.setSelectedRows([]);
           if (data) {
             this.setMiners(data);
           }
@@ -144,6 +189,12 @@ export class TableComponent implements OnInit {
     this.dashboardDataService.getChangedRows().subscribe({
       next: data => {
         this.changedRows = data;
+      }
+    });
+
+    this.dashboardDataService.getSelectedRows().subscribe({
+      next: data => {
+        this.selectedRows = data;
       }
     });
 
