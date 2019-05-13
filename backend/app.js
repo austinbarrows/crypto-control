@@ -526,7 +526,7 @@ async function restartMiner(id) {
     //TODO: Try replacing command param with "/sbin/reboot -f > /dev/null 2>&1 &" for AntMiners
     //Command param verified functional: "echo '" + password + "' | sudo -S reboot"
     //
-    console.log(name + " restarted");
+    console.log(miner.name + " restarted");
   });
 };
 
