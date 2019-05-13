@@ -15,6 +15,7 @@ export class DashboardDataService {
   minerData = new BehaviorSubject(null);
   changedRows = new BehaviorSubject([]);
   selectedRows = new BehaviorSubject([]);
+  changedAndSelectedRows = new BehaviorSubject([]);
   maintModeEnabled = new BehaviorSubject(false);
   autoModeEnabled = new BehaviorSubject(true);
   serverIp = "http://10.0.0.100:8001";
@@ -132,9 +133,26 @@ export class DashboardDataService {
     return this.minerData.asObservable();
   }
 
+  computeChangedAndSelectedRows() {
+    let changedAndSelected = [];
+    let changedRows: any = this.changedRows.value;
+    let selectedRows: any = this.selectedRows.value;
+
+    for (let i = 0; i < changedRows.length; i++) { // Testing which changedRows are also selected
+      for (let j = 0; j < selectedRows.length; j++) {
+        if (changedRows[i]._id === selectedRows[j]._id) {
+          changedAndSelected.push(changedRows[i]);
+        }
+      }
+    }
+
+    this.setChangedAndSelectedRows(changedAndSelected);
+  }
+
   // Responsible for synchronizing changed rows of the dashboard table
   setChangedRows(rows) {
     this.changedRows.next(rows);
+    this.computeChangedAndSelectedRows();
   }
 
   getChangedRows() {
@@ -144,10 +162,19 @@ export class DashboardDataService {
   setSelectedRows(rows) {
     console.log(rows);
     this.selectedRows.next(rows);
+    this.computeChangedAndSelectedRows();
   }
 
   getSelectedRows() {
     return this.selectedRows.asObservable();
+  }
+
+  getChangedAndSelectedRows() {
+    return this.changedAndSelectedRows.asObservable();
+  }
+
+  setChangedAndSelectedRows(rows) {
+    this.changedAndSelectedRows.next(rows);
   }
 
   getMaintMode() {
