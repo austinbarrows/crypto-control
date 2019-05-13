@@ -24,7 +24,7 @@ export class DashboardDataService {
   }
 
   restartMiner(miner) {
-    let url = this.serverIp + "/api/miners/" + miner.name + "/restart";
+    let url = this.serverIp + "/api/miners/" + miner._id + "/restart";
     let options = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
@@ -76,9 +76,9 @@ export class DashboardDataService {
     this.updateManually();
   }
 
-  switchPool(name, poolURL, poolUser, poolPass) {
-    if (name && poolURL && poolUser && poolPass) {
-      let url = this.serverIp + "/api/miners/" + name + "/switchpool";
+  switchPool(id, poolURL, poolUser, poolPass) {
+    if (id && poolURL && poolUser && poolPass) {
+      let url = this.serverIp + "/api/miners/" + id + "/switchpool";
       let body = new HttpParams();
       body = body.set("poolURL", poolURL);
       body = body.set("poolUser", poolUser);
@@ -100,12 +100,12 @@ export class DashboardDataService {
   switchPools(miners) {
     for (let i = 0; i < miners.length; i++) {
       let miner = miners[i];
-      let name = miner.name;
+      let id = miner._id;
       let poolURL = miner.primaryPool;
       let poolUser = miner.miningAddress;
       let poolPass = miner.password;
 
-      this.switchPool(name, poolURL, poolUser, poolPass);
+      this.switchPool(id, poolURL, poolUser, poolPass);
     }
   }
 
