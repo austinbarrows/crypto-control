@@ -612,11 +612,11 @@ app.post("/api/miners/remove", removeMinerMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
-app.post("/api/miners/:databaseID/restart", restartMinerMiddleware, function(req, res) {
+app.post("/api/miners/:id/restart", restartMinerMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
-app.post("/api/miners/:databaseID/switchpool", switchPoolMiddleware, function(req, res) {
+app.post("/api/miners/:id/switchpool", switchPoolMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
