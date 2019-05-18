@@ -25,6 +25,7 @@ let globals = {
 //app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use("/", express.static(__dirname + "/dist/crypto-control"));
+app.use(express.static('public'));
 app.use(cors());
 
 //Mongoose/MongoDB setup
