@@ -268,8 +268,8 @@ async function refreshAll() {
   let ids = [];
   let refreshes = [];
 
-  // Create an array of names by finding all miners in the DB and adding their
-  // names to the array
+  // Create an array of ids by finding all miners in the DB and adding their
+  // ids to the array
 
   await Miner.find({}, function(err, miners){
     for (let i = 0; i < miners.length; i++) {
