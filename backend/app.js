@@ -251,6 +251,7 @@ async function refreshStatsAndPools(id) {
   await Miner.findByIdAndUpdate(id, { $set: dataFlattened }, function(err, match){
     console.log(name + " updated");
   });
+
   return;
 };
 
@@ -281,7 +282,7 @@ async function refreshAll() {
     }
   });
 
-console.log(ids);
+  console.log(ids);
   // Create an array of promises representing the refreshed data for each miner
   for (let i = 0; i < ids.length; i++) {
     refreshes.push(refreshStatsAndPools(ids[i]));
@@ -304,7 +305,7 @@ async function refreshAllMiddleware(req, res, next) {
 };
 
 async function refreshOne(req, res, next) {
-  let id = req.params.databaseID;
+  let id = req.params.id;
   let refreshed = await refreshStatsAndPools(id);
   console.log(refreshed);
   next();
@@ -402,7 +403,7 @@ async function switchPool(id, poolURL, poolUser, poolPass) {
 };
 
 async function switchPoolMiddleware(req, res, next) {
-  let id = req.params.databaseID;
+  let id = req.params.id;
   let poolURL = req.body.poolURL;
   let poolUser = req.body.poolUser;
   let poolPass = req.body.poolPass;
@@ -485,7 +486,7 @@ async function removeMiner(id) {
 };
 
 async function removeMinerMiddleware(req, res, next) {
-  let id = req.body.databaseID;
+  let id = req.body.id;
   await removeMiner(id);
   next();
 };
@@ -541,7 +542,7 @@ async function restartMiner(id) {
 };
 
 async function restartMinerMiddleware(req, res, next) {
-  let id = req.params.databaseID;
+  let id = req.params.id;
   await restartMiner(id);
   next();
 };
