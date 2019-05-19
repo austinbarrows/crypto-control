@@ -553,14 +553,15 @@ async function getAllPasswords() {
   for (let i = 0; i < miners.length; i++) {
     try {
       let id = miners[i]._id;
+      if (!miners[i].timedOutOnLastQuery) {
+        let {confType, path} = await determineConfByType(miners[i]);
 
-      let {confType, path} = await determineConfByType(miners[i]);
-
-      let config = await fsPromises.readFile(path, {encoding: "utf8"});
-      config = await JSON.parse(config);
-      console.log(config);
-      let poolPass = config.pools[0].pass;
-      passwords[id] = poolPass;
+        let config = await fsPromises.readFile(path, {encoding: "utf8"});
+        config = await JSON.parse(config);
+        console.log(config);
+        let poolPass = config.pools[0].pass;
+        passwords[id] = poolPass;
+      }
     }
     catch (error) {
       if (error.code === "ENOENT") {
