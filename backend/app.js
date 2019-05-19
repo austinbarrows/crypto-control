@@ -25,7 +25,7 @@ let globals = {
 //Express setup
 //app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use("/", express.static(__dirname + "../frontend/dist/crypto-control"));
+app.use("/", express.static("../frontend/dist/crypto-control"));
 app.use(express.static('public'));
 app.use(cors());
 
@@ -643,7 +643,7 @@ async function updateDatabasePeriodically() {
 }
 
 app.get("/", function(req, res) {
-  res.sendFile(path.resolve("dist/crypto-control/index.html"));
+  res.sendFile(path.resolve("../frontend/dist/crypto-control/index.html"));
 });
 
 app.get("/api/whattomine", whattomineMiddleware, function(req, res) {
