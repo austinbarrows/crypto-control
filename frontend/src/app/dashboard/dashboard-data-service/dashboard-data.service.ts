@@ -63,7 +63,7 @@ export class DashboardDataService {
     for (let i = 0; i < miners.length; i++) {
       let url = this.serverIp + "/api/miners/remove";
       let body = new HttpParams();
-      body = body.set("databaseID", miners[i]._id);
+      body = body.set("id", miners[i]._id);
       let options = {
         headers: new HttpHeaders({
           'Content-Type':  'application/x-www-form-urlencoded',
