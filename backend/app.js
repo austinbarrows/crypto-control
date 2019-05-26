@@ -593,7 +593,11 @@ async function autoRestart(id) {
   if (!miner.timedOutOnLastQuery) {
     // Only runs if the chip% is below the set threshold and 1 hour has passed
     // since the last restart
-    if (miner.commands.stats.STATS[1]["Chip%"] < miner.threshold &&
+    let chipPercent = miner.commands.stats.STATS[1]["Chip%"];
+    let avgHashrate = miner.commands.stats.STATS[1]["GHS av"];
+    let elapsed = miner.commands.stats.STATS[1]["Elapsed"];
+    let gracePeriod = 15 * 60; // 15 minutes; elapsed is in seconds
+    if (( chipPercent < miner.threshold || (avgHashrate < (0.25 * miner.maxAvgHashrate) && elapsed > gracePeriod)) &&
         miner.lastRestarted.getTime() - Date.now() > diff) {
           await restartMiner(id);
     }
