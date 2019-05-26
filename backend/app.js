@@ -38,6 +38,7 @@ let minerSchema = new mongoose.Schema({
   timedOutOnLastQuery: Boolean,
   lastRestarted: Date,
   threshold: Number,
+  maxAvgHashrate: Number,
   commands: {
     stats: Object,
     pools: Object
@@ -238,6 +239,11 @@ async function refreshStatsAndPools(id) {
   data.commands.stats = stats.commands.stats;
   data.commands.pools = pools.commands.pools;
   data.timedOutOnLastQuery = pools.timedOutOnLastQuery;
+  if (!data.timedOutOnLastQuery) {
+    if (stats.commands.stats.STATS[1]["GHS av"] > currentMiner.maxAvgHashrate) {
+      data.maxAvgHashrate = stats.commands.stats.STATS[1]["GHS av"];
+    }
+  }
 
   console.log("----------- DATA START ------------");
   console.log(data);
