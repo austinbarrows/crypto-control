@@ -20,8 +20,17 @@ export class DashboardDataService {
   autoModeEnabled = new BehaviorSubject(true);
   serverIp = "http://10.0.0.100:8001";
 
-  getData() {
-    return this.http.get(this.serverIp + "/api/miners");
+  getData(refreshAll) {
+    let url = this.serverIp + "/api/miners";
+    let options = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/x-www-form-urlencoded',
+      }),
+    };
+    let body = new HttpParams();
+    body = body.set("refreshAll", refreshAll);
+
+    return this.http.post(url, body, options);
   }
 
   restartMiner(miner) {
@@ -63,7 +72,7 @@ export class DashboardDataService {
     for (let i = 0; i < miners.length; i++) {
       let url = this.serverIp + "/api/miners/remove";
       let body = new HttpParams();
-      body = body.set("databaseID", miners[i]._id);
+      body = body.set("id", miners[i]._id);
       let options = {
         headers: new HttpHeaders({
           'Content-Type':  'application/x-www-form-urlencoded',
@@ -111,7 +120,7 @@ export class DashboardDataService {
   }
 
   updateManually() {
-    this.getData().subscribe({next: (data) => {
+    this.getData(true).subscribe({next: (data) => {
         this.minerData.next(data);
       }
     });
@@ -121,7 +130,7 @@ export class DashboardDataService {
     this.dataTimer.subscribe({
       next: (v) => {
         if (this.autoModeEnabled.value) {
-          this.getData().subscribe({
+          this.getData(false).subscribe({
             next: (data) => {
               this.minerData.next(data);
             }

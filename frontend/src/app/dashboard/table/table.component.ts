@@ -118,6 +118,7 @@ export class TableComponent implements OnInit {
 
   setMiners(data) {
     let miners = data.miners;
+    console.log(miners);
     this.miners = [];
     console.log("Miner amount: " + miners.length)
     for (let i = 0; i < miners.length; i++) {

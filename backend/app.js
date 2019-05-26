@@ -18,13 +18,15 @@ let globals = {
     stats: "{\"command\" : \"stats\"}",
     pools: "{\"command\" : \"pools\"}",
     restart: "{\"command\" : \"restart\"}"
-  }
+  },
+  threshold: 0.90,
 };
 
 //Express setup
 //app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use("/", express.static(__dirname + "/dist/crypto-control"));
+app.use("/", express.static("../frontend/dist/crypto-control"));
+app.use(express.static('public'));
 app.use(cors());
 
 //Mongoose/MongoDB setup
@@ -34,6 +36,9 @@ let minerSchema = new mongoose.Schema({
   ip: String,
   port: Number,
   timedOutOnLastQuery: Boolean,
+  lastRestarted: Date,
+  threshold: Number,
+  maxAvgHashrate: Number,
   commands: {
     stats: Object,
     pools: Object
@@ -234,6 +239,11 @@ async function refreshStatsAndPools(id) {
   data.commands.stats = stats.commands.stats;
   data.commands.pools = pools.commands.pools;
   data.timedOutOnLastQuery = pools.timedOutOnLastQuery;
+  if (!data.timedOutOnLastQuery) {
+    if (stats.commands.stats.STATS[1]["GHS av"] > currentMiner.maxAvgHashrate) {
+      data.maxAvgHashrate = stats.commands.stats.STATS[1]["GHS av"];
+    }
+  }
 
   console.log("----------- DATA START ------------");
   console.log(data);
@@ -247,6 +257,7 @@ async function refreshStatsAndPools(id) {
   await Miner.findByIdAndUpdate(id, { $set: dataFlattened }, function(err, match){
     console.log(name + " updated");
   });
+
   return;
 };
 
@@ -267,8 +278,8 @@ async function refreshAll() {
   let ids = [];
   let refreshes = [];
 
-  // Create an array of names by finding all miners in the DB and adding their
-  // names to the array
+  // Create an array of ids by finding all miners in the DB and adding their
+  // ids to the array
 
   await Miner.find({}, function(err, miners){
     for (let i = 0; i < miners.length; i++) {
@@ -277,7 +288,7 @@ async function refreshAll() {
     }
   });
 
-console.log(ids);
+  console.log(ids);
   // Create an array of promises representing the refreshed data for each miner
   for (let i = 0; i < ids.length; i++) {
     refreshes.push(refreshStatsAndPools(ids[i]));
@@ -285,16 +296,22 @@ console.log(ids);
 
   // Wait for data to refresh for all miners
   await Promise.all(refreshes);
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX END OF MINERS UPDATE XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  return;
 };
 
 async function refreshAllMiddleware(req, res, next) {
-  await refreshAll();
-  // Pass request handling to next function after data is refreshed
+  let force = req.body.refreshAll;
+  force = (force === "true");
+
+  if (force === true) {
+    await refreshAll();
+  }
   next();
 };
 
 async function refreshOne(req, res, next) {
-  let id = req.params.databaseID;
+  let id = req.params.id;
   let refreshed = await refreshStatsAndPools(id);
   console.log(refreshed);
   next();
@@ -392,7 +409,7 @@ async function switchPool(id, poolURL, poolUser, poolPass) {
 };
 
 async function switchPoolMiddleware(req, res, next) {
-  let id = req.params.databaseID;
+  let id = req.params.id;
   let poolURL = req.body.poolURL;
   let poolUser = req.body.poolUser;
   let poolPass = req.body.poolPass;
@@ -448,7 +465,7 @@ async function addMiner(name, ip) {
 
   if (minersByIP.length == 0) {
     let port = 4028;
-    let newMiner = await Miner.create({"name" : name, "ip" : ip, "port": port});
+    let newMiner = await Miner.create({"name" : name, "ip" : ip, "port": port, "threshold": globals.threshold});
     console.log("New database entry created for name: " + name + ", ip: " + ip);
 
     await refreshStatsAndPools(newMiner._id);
@@ -475,7 +492,7 @@ async function removeMiner(id) {
 };
 
 async function removeMinerMiddleware(req, res, next) {
-  let id = req.body.databaseID;
+  let id = req.body.id;
   await removeMiner(id);
   next();
 };
@@ -522,16 +539,16 @@ async function restartMiner(id) {
     }
   });
 
-  ssh.execCommand("/sbin/reboot -f > /dev/null 2>&1 &", { cwd:'/' }).then(function(result) {
-    //TODO: Try replacing command param with "/sbin/reboot -f > /dev/null 2>&1 &" for AntMiners
-    //Command param verified functional: "echo '" + password + "' | sudo -S reboot"
-    //
-    console.log(miner.name + " restarted");
-  });
+  await ssh.execCommand("/sbin/reboot -f > /dev/null 2>&1 &", { cwd:'/' });
+  //TODO: Try replacing command param with "/sbin/reboot -f > /dev/null 2>&1 &" for AntMiners
+  //Command param verified functional: "echo '" + password + "' | sudo -S reboot"
+  //
+  await Miner.findByIdAndUpdate(id, { $set: { lastRestarted: new Date() }});
+  console.log(miner.name + " restarted");
 };
 
 async function restartMinerMiddleware(req, res, next) {
-  let id = req.params.databaseID;
+  let id = req.params.id;
   await restartMiner(id);
   next();
 };
@@ -542,14 +559,15 @@ async function getAllPasswords() {
   for (let i = 0; i < miners.length; i++) {
     try {
       let id = miners[i]._id;
+      if (!miners[i].timedOutOnLastQuery) {
+        let {confType, path} = await determineConfByType(miners[i]);
 
-      let {confType, path} = await determineConfByType(miners[i]);
-
-      let config = await fsPromises.readFile(path, {encoding: "utf8"});
-      config = await JSON.parse(config);
-      console.log(config);
-      let poolPass = config.pools[0].pass;
-      passwords[id] = poolPass;
+        let config = await fsPromises.readFile(path, {encoding: "utf8"});
+        config = await JSON.parse(config);
+        console.log(config);
+        let poolPass = config.pools[0].pass;
+        passwords[id] = poolPass;
+      }
     }
     catch (error) {
       if (error.code === "ENOENT") {
@@ -566,6 +584,44 @@ async function getAllPasswords() {
 async function getAllPasswordsMiddleware(req, res, next) {
   req.locals.passwords = await getAllPasswords();
   next();
+};
+
+async function autoRestart(id) {
+  let miner = await Miner.findById(id);
+  let diff = 60 * 60 * 1000; // The time difference between restarts required to allow an auto-restart, in milliseconds
+
+  if (!miner.timedOutOnLastQuery) {
+    // Only runs if the chip% is below the set threshold and 1 hour has passed
+    // since the last restart
+    let chipPercent = miner.commands.stats.STATS[1]["Chip%"];
+    let avgHashrate = miner.commands.stats.STATS[1]["GHS av"];
+    let elapsed = miner.commands.stats.STATS[1]["Elapsed"];
+    let gracePeriod = 15 * 60; // 15 minutes; elapsed is in seconds
+    if (( chipPercent < miner.threshold || (avgHashrate < (0.25 * miner.maxAvgHashrate) && elapsed > gracePeriod)) &&
+        miner.lastRestarted.getTime() - Date.now() > diff) {
+          await restartMiner(id);
+    }
+  }
+  return;
+}
+
+async function autoRestartAll() {
+  let ids = [];
+  let restarts = [];
+
+  await Miner.find({}, function(err, miners){
+    for (let i = 0; i < miners.length; i++) {
+      console.log(miners[i]);
+      ids.push(miners[i]._id);
+    }
+  });
+
+  for (let i = 0; i < ids.length; i++) {
+    restarts.push(autoRestart(ids[i]));
+  }
+
+  await Promise.all(restarts);
+  return;
 };
 
 async function whattomineAPICall() {
@@ -588,8 +644,16 @@ async function whattomineMiddleware(req, res, next) {
   next();
 };
 
+async function updateDatabasePeriodically() {
+  let delay = 10000; // Delay in milliseconds
+  await refreshAll();
+  await autoRestartAll();
+  console.log(new Date().toString());
+  setTimeout(updateDatabasePeriodically, delay);
+}
+
 app.get("/", function(req, res) {
-  res.sendFile(path.resolve("dist/crypto-control/index.html"));
+  res.sendFile(path.resolve("../frontend/dist/crypto-control/index.html"));
 });
 
 app.get("/api/whattomine", whattomineMiddleware, function(req, res) {
@@ -597,10 +661,10 @@ app.get("/api/whattomine", whattomineMiddleware, function(req, res) {
   res.send({data: data});
 });
 
-app.get("/api/miners", refreshAllMiddleware, findAllMiddleware, getAllPasswordsMiddleware, function(req, res) {
+app.post("/api/miners", refreshAllMiddleware, findAllMiddleware, getAllPasswordsMiddleware, function(req, res) {
   let miners = req.locals.miners;
   let passwords = req.locals.passwords;
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX END OF MINERS UPDATE XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
   res.send({miners: miners, passwords: passwords});
 });
 
@@ -612,14 +676,17 @@ app.post("/api/miners/remove", removeMinerMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
-app.post("/api/miners/:databaseID/restart", restartMinerMiddleware, function(req, res) {
+app.post("/api/miners/:id/restart", restartMinerMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
-app.post("/api/miners/:databaseID/switchpool", switchPoolMiddleware, function(req, res) {
+app.post("/api/miners/:id/switchpool", switchPoolMiddleware, function(req, res) {
   res.sendStatus(200);
 });
 
 app.listen("8001", function() {
   console.log("MinerMonitor server running!");
 });
+
+// **** Key function for use. Only source of automatic database updating
+updateDatabasePeriodically();
