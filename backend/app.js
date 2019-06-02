@@ -601,9 +601,17 @@ async function autoRestart(id) {
     let avgHashrate = miner.commands.stats.STATS[1]["GHS av"];
     let elapsed = miner.commands.stats.STATS[1]["Elapsed"];
     let gracePeriod = 15 * 60; // 15 minutes; elapsed is in seconds
-    if (( chipPercent < miner.threshold || (avgHashrate < (0.25 * miner.maxAvgHashrate) && elapsed > gracePeriod)) &&
-        miner.lastRestarted.getTime() - Date.now() > diff) {
-          await restartMiner(id);
+
+    let belowThreshold = chipPercent < miner.threshold;
+    let lowHashrate = avgHashrate < (0.25 * miner.maxAvgHashrate);
+    let gracePeriodPassed = elapsed > gracePeriod;
+    let intervalPassed = true;
+    if (miner.lastRestarted !== undefined && miner.lastRestarted !== null) {
+      intervalPassed = Date.now() - miner.lastRestarted.getTime() > diff;
+    }
+
+    if ((belowThreshold || (lowHashrate && gracePeriodPassed)) && intervalPassed) {
+      await restartMiner(id);
     }
   }
   return;
