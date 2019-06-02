@@ -516,6 +516,10 @@ async function percentOfChips(stats) {
   }
   let total = live + dead;
   let percentage = (live / total).toFixed(4);
+  if (typeof percentage !== "number") {
+    stats.STATS[1]["Chip%"] = 0;
+    return stats;
+  }
   stats.STATS[1]["Chip%"] = percentage;
   return stats;
 };
