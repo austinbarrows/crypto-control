@@ -23,7 +23,6 @@ let globals = {
 };
 
 //Express setup
-//app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use("/", express.static(__dirname + "/../frontend/dist/crypto-control"));
 app.use(express.static('public'));
