@@ -23,9 +23,8 @@ let globals = {
 };
 
 //Express setup
-//app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use("/", express.static("../frontend/dist/crypto-control"));
+app.use("/", express.static(__dirname + "/../frontend/dist/crypto-control"));
 app.use(express.static('public'));
 app.use(cors());
 
@@ -425,13 +424,13 @@ async function determineConfByType(miner) {
 
   if (typeID === "BC50") {
     confType = "bmminer.conf";
-    path = "miner_files/" + miner._id + "_" + confType;
+    path = __dirname + "/miner_files/" + miner._id + "_" + confType;
   } else if (typeID === "L30") {
     confType = "cgminer.conf";
-    path = "miner_files/" + miner._id + "_" + confType;
+    path = __dirname + "/miner_files/" + miner._id + "_" + confType;
   } else if (typeID === "D10") {
     confType = "cgminer.conf";
-    path = "miner_files/" + miner._id + "_" + confType;
+    path = __dirname + "/miner_files/" + miner._id + "_" + confType;
   }
 
   return {confType, path};
@@ -516,6 +515,10 @@ async function percentOfChips(stats) {
   }
   let total = live + dead;
   let percentage = (live / total).toFixed(4);
+  if (percentage === "NaN") {
+    stats.STATS[1]["Chip%"] = 0;
+    return stats;
+  }
   stats.STATS[1]["Chip%"] = percentage;
   return stats;
 };
@@ -597,9 +600,17 @@ async function autoRestart(id) {
     let avgHashrate = miner.commands.stats.STATS[1]["GHS av"];
     let elapsed = miner.commands.stats.STATS[1]["Elapsed"];
     let gracePeriod = 15 * 60; // 15 minutes; elapsed is in seconds
-    if (( chipPercent < miner.threshold || (avgHashrate < (0.25 * miner.maxAvgHashrate) && elapsed > gracePeriod)) &&
-        miner.lastRestarted.getTime() - Date.now() > diff) {
-          await restartMiner(id);
+
+    let belowThreshold = chipPercent < miner.threshold;
+    let lowHashrate = avgHashrate < (0.25 * miner.maxAvgHashrate);
+    let gracePeriodPassed = elapsed > gracePeriod;
+    let intervalPassed = true;
+    if (miner.lastRestarted !== undefined && miner.lastRestarted !== null) {
+      intervalPassed = Date.now() - miner.lastRestarted.getTime() > diff;
+    }
+
+    if ((belowThreshold || (lowHashrate && gracePeriodPassed)) && intervalPassed) {
+      await restartMiner(id);
     }
   }
   return;
@@ -653,7 +664,7 @@ async function updateDatabasePeriodically() {
 }
 
 app.get("/", function(req, res) {
-  res.sendFile(path.resolve("../frontend/dist/crypto-control/index.html"));
+  res.sendFile("index.html");
 });
 
 app.get("/api/whattomine", whattomineMiddleware, function(req, res) {
