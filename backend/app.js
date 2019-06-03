@@ -25,7 +25,7 @@ let globals = {
 //Express setup
 //app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use("/", express.static("../frontend/dist/crypto-control"));
+app.use("/", express.static(__dirname + "/../frontend/dist/crypto-control"));
 app.use(express.static('public'));
 app.use(cors());
 
@@ -425,13 +425,13 @@ async function determineConfByType(miner) {
 
   if (typeID === "BC50") {
     confType = "bmminer.conf";
-    path = "miner_files/" + miner._id + "_" + confType;
+    path = __dirname + "/miner_files/" + miner._id + "_" + confType;
   } else if (typeID === "L30") {
     confType = "cgminer.conf";
-    path = "miner_files/" + miner._id + "_" + confType;
+    path = __dirname + "/miner_files/" + miner._id + "_" + confType;
   } else if (typeID === "D10") {
     confType = "cgminer.conf";
-    path = "miner_files/" + miner._id + "_" + confType;
+    path = __dirname + "/miner_files/" + miner._id + "_" + confType;
   }
 
   return {confType, path};
@@ -665,7 +665,7 @@ async function updateDatabasePeriodically() {
 }
 
 app.get("/", function(req, res) {
-  res.sendFile(path.resolve("../frontend/dist/crypto-control/index.html"));
+  res.sendFile("index.html");
 });
 
 app.get("/api/whattomine", whattomineMiddleware, function(req, res) {
