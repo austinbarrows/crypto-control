@@ -590,29 +590,35 @@ async function getAllPasswordsMiddleware(req, res, next) {
 };
 
 async function autoRestart(id) {
-  let miner = await Miner.findById(id);
   let diff = 60 * 60 * 1000; // The time difference between restarts required to allow an auto-restart, in milliseconds
 
-  if (!miner.timedOutOnLastQuery) {
-    // Only runs if the chip% is below the set threshold and 1 hour has passed
-    // since the last restart
-    let chipPercent = miner.commands.stats.STATS[1]["Chip%"];
-    let avgHashrate = miner.commands.stats.STATS[1]["GHS av"];
-    let elapsed = miner.commands.stats.STATS[1]["Elapsed"];
-    let gracePeriod = 15 * 60; // 15 minutes; elapsed is in seconds
+  try {
+    let miner = await Miner.findById(id);
 
-    let belowThreshold = chipPercent < miner.threshold;
-    let lowHashrate = avgHashrate < (0.25 * miner.maxAvgHashrate);
-    let gracePeriodPassed = elapsed > gracePeriod;
-    let intervalPassed = true;
-    if (miner.lastRestarted !== undefined && miner.lastRestarted !== null) {
-      intervalPassed = Date.now() - miner.lastRestarted.getTime() > diff;
-    }
+    if (!miner.timedOutOnLastQuery) {
+      // Only runs if the chip% is below the set threshold and 1 hour has passed
+      // since the last restart
+      let chipPercent = miner.commands.stats.STATS[1]["Chip%"];
+      let avgHashrate = miner.commands.stats.STATS[1]["GHS av"];
+      let elapsed = miner.commands.stats.STATS[1]["Elapsed"];
+      let gracePeriod = 15 * 60; // 15 minutes; elapsed is in seconds
 
-    if ((belowThreshold || (lowHashrate && gracePeriodPassed)) && intervalPassed) {
-      await restartMiner(id);
+      let belowThreshold = chipPercent < miner.threshold;
+      let lowHashrate = avgHashrate < (0.25 * miner.maxAvgHashrate);
+      let gracePeriodPassed = elapsed > gracePeriod;
+      let intervalPassed = true;
+      if (miner.lastRestarted !== undefined && miner.lastRestarted !== null) {
+        intervalPassed = Date.now() - miner.lastRestarted.getTime() > diff;
+      }
+
+      if ((belowThreshold || (lowHashrate && gracePeriodPassed)) && intervalPassed) {
+        await restartMiner(id);
+      }
     }
+  } catch (e) {
+    console.log(e);
   }
+
   return;
 }
 
@@ -620,18 +626,23 @@ async function autoRestartAll() {
   let ids = [];
   let restarts = [];
 
-  await Miner.find({}, function(err, miners){
-    for (let i = 0; i < miners.length; i++) {
-      console.log(miners[i]);
-      ids.push(miners[i]._id);
-    }
-  });
+  try {
+    await Miner.find({}, function(err, miners){
+      for (let i = 0; i < miners.length; i++) {
+        console.log(miners[i]);
+        ids.push(miners[i]._id);
+      }
+    });
 
-  for (let i = 0; i < ids.length; i++) {
-    restarts.push(autoRestart(ids[i]));
+    for (let i = 0; i < ids.length; i++) {
+      restarts.push(autoRestart(ids[i]));
+    }
+
+    await Promise.all(restarts);
+  } catch (e) {
+    console.log(e);
   }
 
-  await Promise.all(restarts);
   return;
 };
 
@@ -657,9 +668,15 @@ async function whattomineMiddleware(req, res, next) {
 
 async function updateDatabasePeriodically() {
   let delay = 10000; // Delay in milliseconds
-  await refreshAll();
-  await autoRestartAll();
-  console.log(new Date().toString());
+
+  try {
+    await refreshAll();
+    await autoRestartAll();
+    console.log(new Date().toString());
+  } catch (e) {
+    console.log(e);
+  }
+
   setTimeout(updateDatabasePeriodically, delay);
 }
 
